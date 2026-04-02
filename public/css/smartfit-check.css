@@ -1,0 +1,291 @@
+/* ============================================
+   SMARTFIT-CHECK.CSS
+   Halaman: Do You Know Your Body Type?
+   ============================================ */
+
+.smartfit-check {
+    min-height: 100vh;
+    background: #FDFBF9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 80px;
+}
+
+.smartfit-check-container {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #EFEFEF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #838383;
+}
+
+.progress-step.completed .step-number {
+    background: #C5B09F;
+    color: #1B1B1B;
+}
+
+.progress-step.completed .step-number::after {
+    content: '✓';
+    font-size: 12px;
+}
+
+.progress-step.active .step-number {
+    background: #C5B09F;
+    color: #1B1B1B;
+    box-shadow: 0 0 0 4px rgba(197, 176, 159, 0.2);
+}
+
+.step-label {
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #838383;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-step.active .step-label {
+    color: #C5B09F;
+}
+
+.progress-line {
+    width: 60px;
+    height: 2px;
+    background: #EFEFEF;
+    margin: 0 10px;
+}
+
+/* Check Card */
+.check-card {
+    background: white;
+    border-radius: 32px;
+    padding: 48px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    border: 1px solid #EFEFEF;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.card-badge {
+    display: inline-block;
+    background: rgba(197, 176, 159, 0.1);
+    color: #C5B09F;
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 36px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    color: #1B1B1B;
+    margin-bottom: 12px;
+}
+
+.card-title span {
+    color: #C5B09F;
+    font-weight: 600;
+}
+
+.card-subtitle {
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+/* Options Grid */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.option-card {
+    background: #FDFBF9;
+    border: 2px solid #EFEFEF;
+    border-radius: 24px;
+    padding: 32px 24px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.option-card:hover {
+    border-color: #C5B09F;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+}
+
+.option-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(197, 176, 159, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.option-icon i {
+    font-size: 28px;
+    color: #C5B09F;
+}
+
+.option-card h3 {
+    font-size: 22px;
+    font-family: 'Marcellus', serif;
+    color: #1B1B1B;
+    margin-bottom: 12px;
+}
+
+.option-card p {
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.option-arrow {
+    display: inline-block;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #C5B09F;
+    transition: gap 0.3s;
+}
+
+.option-card:hover .option-arrow {
+    transform: translateX(5px);
+}
+
+/* Dropdown Select */
+.body-type-select {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #EFEFEF;
+}
+
+.select-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #EFEFEF;
+    border-radius: 12px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: #1B1B1B;
+    background: white;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.select-input:focus {
+    outline: none;
+    border-color: #C5B09F;
+}
+
+.btn-continue {
+    width: 100%;
+    background: #C5B09F;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    color: #1B1B1B;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-continue:hover {
+    background: #b39e8c;
+    transform: translateY(-2px);
+}
+
+/* Card Note */
+.card-note {
+    background: #F9F5F2;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.card-note i {
+    font-size: 20px;
+    color: #C5B09F;
+}
+
+.card-note p {
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .check-card {
+        padding: 32px 24px;
+    }
+    
+    .card-title {
+        font-size: 28px;
+    }
+    
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .progress-line {
+        width: 30px;
+    }
+    
+    .step-label {
+        display: none;
+    }
+}

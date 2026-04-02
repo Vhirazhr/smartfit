@@ -1,0 +1,274 @@
+/* ============================================
+   SMARTFIT-START.CSS
+   Halaman: Welcome to SMARTfit
+   ============================================ */
+
+.smartfit-start {
+    min-height: 100vh;
+    background: #FDFBF9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 80px;
+}
+
+.smartfit-start-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #EFEFEF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #838383;
+    transition: all 0.3s;
+}
+
+.progress-step.active .step-number {
+    background: #C5B09F;
+    color: #1B1B1B;
+    box-shadow: 0 0 0 4px rgba(197, 176, 159, 0.2);
+}
+
+.step-label {
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #838383;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-step.active .step-label {
+    color: #C5B09F;
+}
+
+.progress-line {
+    width: 60px;
+    height: 2px;
+    background: #EFEFEF;
+    margin: 0 10px;
+}
+
+/* Start Card */
+.start-card {
+    background: white;
+    border-radius: 32px;
+    padding: 48px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    border: 1px solid #EFEFEF;
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(197, 176, 159, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.card-icon i {
+    font-size: 40px;
+    color: #C5B09F;
+}
+
+.card-title {
+    font-size: 36px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    color: #1B1B1B;
+    margin-bottom: 16px;
+}
+
+.card-title span {
+    color: #C5B09F;
+    font-weight: 600;
+}
+
+.card-description {
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-description strong {
+    color: #C5B09F;
+}
+
+/* Feature List */
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #F9F5F2;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.feature:hover {
+    transform: translateX(5px);
+}
+
+.feature i {
+    font-size: 28px;
+    color: #C5B09F;
+    flex-shrink: 0;
+}
+
+.feature h4 {
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #1B1B1B;
+    margin-bottom: 4px;
+}
+
+.feature p {
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    margin: 0;
+}
+
+/* Buttons */
+.start-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #1B1B1B;
+    color: #FDFBF9;
+    padding: 14px 32px;
+    border-radius: 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #C5B09F;
+    color: #1B1B1B;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1.5px solid #EFEFEF;
+    color: #1B1B1B;
+    padding: 14px 32px;
+    border-radius: 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    border-color: #C5B09F;
+    background: rgba(197, 176, 159, 0.05);
+}
+
+/* Note */
+.start-note {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #EFEFEF;
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+.start-note i {
+    color: #C5B09F;
+    margin-right: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .start-card {
+        padding: 32px 24px;
+    }
+    
+    .card-title {
+        font-size: 28px;
+    }
+    
+    .start-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary, .btn-secondary {
+        justify-content: center;
+    }
+    
+    .progress-line {
+        width: 30px;
+    }
+    
+    .step-label {
+        display: none;
+    }
+    
+    .start-note {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+}

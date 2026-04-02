@@ -1,0 +1,486 @@
+/* ============================================
+   SMARTFIT-SELECT.CSS
+   Halaman: Select Body Type & Preferences
+   ============================================ */
+
+.smartfit-select {
+    min-height: 100vh;
+    background: #FDFBF9;
+    padding: 120px 20px 80px;
+}
+
+.smartfit-select-container {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #EFEFEF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: #838383;
+}
+
+.progress-step.completed .step-number {
+    background: #C5B09F;
+    color: #1B1B1B;
+}
+
+.progress-step.active .step-number {
+    background: #C5B09F;
+    color: #1B1B1B;
+    box-shadow: 0 0 0 4px rgba(197, 176, 159, 0.2);
+}
+
+.step-label {
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #838383;
+}
+
+.progress-step.active .step-label {
+    color: #C5B09F;
+}
+
+.progress-line {
+    width: 60px;
+    height: 2px;
+    background: #EFEFEF;
+    margin: 0 10px;
+}
+
+/* Form Card */
+.select-form {
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    border: 1px solid #EFEFEF;
+    overflow: hidden;
+}
+
+.form-card {
+    padding: 48px;
+}
+
+.card-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.card-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(197, 176, 159, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.card-icon i {
+    font-size: 32px;
+    color: #C5B09F;
+}
+
+.card-title {
+    font-size: 32px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    color: #1B1B1B;
+    margin-bottom: 12px;
+}
+
+.card-title span {
+    color: #C5B09F;
+    font-weight: 600;
+}
+
+.card-subtitle {
+    font-size: 15px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+/* Form Section */
+.form-section {
+    margin-bottom: 40px;
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.step-badge {
+    width: 32px;
+    height: 32px;
+    background: #C5B09F;
+    color: #1B1B1B;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.section-label h3 {
+    font-size: 18px;
+    font-family: 'Marcellus', serif;
+    color: #1B1B1B;
+}
+
+/* Body Type Grid */
+.body-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.option-box {
+    display: block;
+    cursor: pointer;
+}
+
+.option-box input {
+    display: none;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FDFBF9;
+    border: 2px solid #EFEFEF;
+    border-radius: 16px;
+    transition: all 0.3s;
+}
+
+.option-box input:checked + .option-content {
+    border-color: #C5B09F;
+    background: rgba(197, 176, 159, 0.05);
+}
+
+.option-content:hover {
+    border-color: #C5B09F;
+}
+
+.option-icon {
+    font-size: 24px;
+}
+
+.option-name {
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #1B1B1B;
+    flex: 1;
+}
+
+.option-desc {
+    font-size: 11px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+/* Style Grid */
+.style-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.option-chip {
+    cursor: pointer;
+}
+
+.option-chip input {
+    display: none;
+}
+
+.chip-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #FDFBF9;
+    border: 2px solid #EFEFEF;
+    border-radius: 40px;
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    color: #1B1B1B;
+    transition: all 0.3s;
+}
+
+.option-chip input:checked + .chip-content {
+    border-color: #C5B09F;
+    background: #C5B09F;
+    color: #1B1B1B;
+}
+
+.chip-content i {
+    font-size: 14px;
+}
+
+/* Color Grid */
+.color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.color-option input {
+    display: none;
+}
+
+.color-swatch {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.color-option input:checked + .color-swatch {
+    border-color: #C5B09F;
+    transform: scale(1.1);
+}
+
+.color-option span {
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #EFEFEF;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1.5px solid #EFEFEF;
+    border-radius: 40px;
+    color: #1B1B1B;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    border-color: #C5B09F;
+    background: rgba(197, 176, 159, 0.05);
+}
+
+.btn-continue {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 32px;
+    background: #1B1B1B;
+    border: none;
+    border-radius: 40px;
+    color: #FDFBF9;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-continue:hover {
+    background: #C5B09F;
+    color: #1B1B1B;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-card {
+        padding: 32px 24px;
+    }
+    
+    .card-title {
+        font-size: 26px;
+    }
+    
+    .body-type-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .style-grid {
+        justify-content: center;
+    }
+    
+    .color-grid {
+        justify-content: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .btn-back, .btn-continue {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .progress-line {
+        width: 30px;
+    }
+    
+    .step-label {
+        display: none;
+    }
+
+    /* Shape Illustrations */
+.shape-illustration {
+    width: 70px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.shape-illustration svg {
+    transition: all 0.3s ease;
+}
+
+.option-box.selected .shape-illustration svg path,
+.option-box.selected .shape-illustration svg polygon,
+.option-box.selected .shape-illustration svg rect,
+.option-box.selected .shape-illustration svg circle {
+    stroke: #1B1B1B;
+    stroke-width: 3;
+}
+
+.option-box:hover .shape-illustration svg {
+    transform: scale(1.05);
+}
+
+/* Option Content dengan ilustrasi */
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: #FDFBF9;
+    border: 2px solid #EFEFEF;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.option-info {
+    flex: 1;
+}
+
+.option-info .option-name {
+    display: block;
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #1B1B1B;
+    margin-bottom: 4px;
+}
+
+.option-info .option-desc {
+    display: block;
+    font-size: 11px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+.option-check i {
+    font-size: 20px;
+    color: #CBCBCB;
+    transition: all 0.3s;
+}
+
+.option-box.selected .option-check i {
+    color: #C5B09F;
+}
+
+.option-box.selected .option-content {
+    border-color: #C5B09F;
+    background: rgba(197, 176, 159, 0.05);
+}
+
+/* Grid untuk body type (5 item) */
+.body-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .body-type-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .option-content {
+        padding: 12px 16px;
+    }
+    
+    .shape-illustration {
+        width: 55px;
+        height: 66px;
+    }
+    
+    .shape-illustration svg {
+        width: 55px;
+        height: 66px;
+    }
+}
+}

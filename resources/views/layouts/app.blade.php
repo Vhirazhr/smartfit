@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{{ asset('css/newsletter.css') }}">
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/morphotypes.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/smartfit-check.css') }}">
 <link rel="stylesheet" href="{{ asset('css/gallery.css') }}">
 <link rel="stylesheet" href="{{ asset('css/expert-tips.css') }}">
 <link rel="stylesheet" href="{{ asset('css/stats.css') }}">
