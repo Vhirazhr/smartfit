@@ -1,0 +1,176 @@
+/* ============================================
+   WHAT-ARE-WE.CSS - What Are We Section
+   ============================================ */
+
+.what-are-we {
+    position: relative;
+    width: 100%;
+    background: #F0F0F0;
+    padding: 140px 0;
+    overflow: hidden;
+}
+
+.section-bg-gray {
+    position: relative;
+    max-width: 1580px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.title-bg-text {
+    position: absolute;
+    top: -80px;
+    left: 44px;
+    color: rgba(0, 0, 0, 0.05);
+    font-size: 186px;
+    font-family: 'Marcellus', serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 11.16px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 109px;
+    background: #FFFFFF;
+}
+
+.content-image {
+    flex-shrink: 0;
+}
+
+.content-image img {
+    width: 642px;
+    height: auto;
+    display: block;
+}
+
+.content-text {
+    flex: 1;
+    padding-right: 50px;
+}
+
+.text-heading {
+    color: #111111;
+    font-size: 26px;
+    font-family: 'Marcellus', serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1.04px;
+    margin-bottom: 20px;
+}
+
+.text-description {
+    color: #303030;
+    font-size: 18px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    line-height: 24.48px;
+    letter-spacing: 0.18px;
+    margin-bottom: 40px;
+}
+
+.text-description .bold {
+    font-weight: 500;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feature-item i {
+    width: 38px;
+    height: 38px;
+    color: #C5B09F;
+    font-size: 24px;
+}
+
+.feature-item span {
+    color: #303030;
+    font-size: 18px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    line-height: 24.48px;
+    letter-spacing: 0.18px;
+}
+
+.btn-learn {
+    display: inline-block;
+    background: #111111;
+    padding: 12px 24px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    text-decoration: underline;
+    text-transform: uppercase;
+    letter-spacing: 1.40px;
+    transition: all 0.3s;
+}
+
+.btn-learn:hover {
+    background: #2a2a2a;
+    text-decoration: none;
+}
+
+/* Responsive What Are We */
+@media (max-width: 1200px) {
+    .content-wrapper {
+        gap: 50px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .content-text {
+        padding-right: 0;
+        padding: 0 30px 40px;
+    }
+    
+    .feature-item {
+        justify-content: center;
+    }
+    
+    .title-bg-text {
+        font-size: 100px;
+        top: -40px;
+        left: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .what-are-we {
+        padding: 80px 0;
+    }
+    
+    .content-image img {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .text-heading {
+        font-size: 22px;
+    }
+    
+    .text-description,
+    .feature-item span {
+        font-size: 16px;
+    }
+    
+    .title-bg-text {
+        font-size: 60px;
+        top: -20px;
+    }
+}

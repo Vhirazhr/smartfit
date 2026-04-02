@@ -1,0 +1,204 @@
+/* ============================================
+   HERO.CSS - Final Version (Font Lora)
+   ============================================ */
+
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 700px;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 0 20px;
+}
+
+/* Hero Tag - SMARTfit */
+.hero-tag {
+    margin-bottom: 30px;
+}
+
+.hero-tag-light {
+    color: #FDFBF9;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.20px;
+}
+
+.hero-tag-bold {
+    color: #FDFBF9;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.20px;
+}
+
+/* Hero Title - Font Lora (kembali ke asli) */
+.hero-title {
+    max-width: 1020px;
+    color: #FDFBF9;
+    font-size: 58px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    line-height: 71.92px;
+    margin-bottom: 20px;
+}
+
+/* Hero Subtitle */
+.hero-subtitle {
+    margin-bottom: 40px;
+}
+
+.hero-subtitle .text-semibold {
+    color: #FDFBF9;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.60px;
+}
+
+.hero-subtitle .text-italic {
+    color: #FDFBF9;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.60px;
+}
+
+/* Tombol Discover */
+.btn-discover {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 376px;
+    padding: 18px 10px;
+    background: #C5B09F;
+    border-radius: 14px;
+    border: none;
+    color: #16131C;
+    font-size: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-discover span {
+    letter-spacing: 2px;
+}
+
+.btn-discover i {
+    font-size: 18px;
+    transition: transform 0.3s;
+}
+
+.btn-discover:hover {
+    background: #b39e8c;
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.btn-discover:hover i {
+    transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .hero-title {
+        font-size: 48px;
+        line-height: 60px;
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 32px;
+        line-height: 42px;
+    }
+    
+    .hero-subtitle .text-semibold,
+    .hero-subtitle .text-italic {
+        font-size: 12px;
+        letter-spacing: 1px;
+        display: block;
+        margin: 5px 0;
+    }
+    
+    .btn-discover {
+        width: 280px;
+        font-size: 16px;
+        padding: 14px 10px;
+    }
+    
+    .btn-discover i {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 24px;
+        line-height: 32px;
+    }
+    
+    .btn-discover {
+        width: 220px;
+        font-size: 12px;
+    }
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #C5B09F, #C5B09F, transparent);
+    z-index: 2;
+    pointer-events: none;
+}

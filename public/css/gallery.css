@@ -1,0 +1,160 @@
+/* ============================================
+   GALLERY.CSS - Fashion Gallery Section
+   ============================================ */
+
+.gallery-section {
+    width: 100%;
+    background: #FDFBF9;
+    padding: 100px 0;
+}
+
+.gallery-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.gallery-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.gallery-tag {
+    color: #C5B09F;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.gallery-title {
+    color: #1B1B1B;
+    font-size: 42px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.gallery-subtitle {
+    color: #838383;
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 3/4;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 30px 20px 20px;
+    transition: bottom 0.3s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-item:hover .gallery-overlay {
+    bottom: 0;
+}
+
+.gallery-overlay h4 {
+    color: #FDFBF9;
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.gallery-overlay p {
+    color: rgba(253, 251, 249, 0.8);
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+}
+
+.gallery-category {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #C5B09F;
+    color: #1B1B1B;
+    font-size: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.gallery-btn {
+    text-align: center;
+}
+
+.btn-view-all {
+    display: inline-block;
+    padding: 14px 40px;
+    background: transparent;
+    border: 2px solid #C5B09F;
+    color: #1B1B1B;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 40px;
+    transition: all 0.3s;
+}
+
+.btn-view-all:hover {
+    background: #C5B09F;
+    transform: translateY(-3px);
+}
+
+/* Responsive Gallery */
+@media (max-width: 1024px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-section {
+        padding: 60px 0;
+    }
+    
+    .gallery-title {
+        font-size: 32px;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

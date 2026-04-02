@@ -1,0 +1,144 @@
+/* ============================================
+   HOW-WE-RECOMMEND.CSS - Simple Version
+   ============================================ */
+
+.how-we-recommend {
+    width: 100%;
+    background: #C5B09F;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.recommend-bg {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.recommend-title {
+    font-size: 42px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    color: #1B1B1B;
+    margin-bottom: 20px;
+}
+
+.recommend-title span {
+    color: #FDFBF9;
+    font-weight: 600;
+}
+
+.recommend-description {
+    max-width: 700px;
+    margin: 0 auto 50px;
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    color: #1B1B1B;
+    line-height: 1.6;
+}
+
+/* Steps */
+.recommend-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.step {
+    text-align: center;
+    background: #FDFBF9;
+    padding: 30px 25px;
+    border-radius: 20px;
+    min-width: 180px;
+    transition: all 0.3s;
+}
+
+.step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.step-icon {
+    font-size: 40px;
+    color: #C5B09F;
+    margin-bottom: 15px;
+}
+
+.step h3 {
+    font-size: 20px;
+    font-family: 'Marcellus', serif;
+    color: #1B1B1B;
+    margin-bottom: 8px;
+}
+
+.step p {
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+.step-arrow {
+    font-size: 28px;
+    color: #1B1B1B;
+}
+
+/* Action */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #1B1B1B;
+    color: #FDFBF9;
+    padding: 14px 36px;
+    border-radius: 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #FDFBF9;
+    color: #1B1B1B;
+    transform: translateY(-2px);
+}
+
+.action-note {
+    margin-top: 20px;
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    color: #1B1B1B;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.action-note i {
+    margin-right: 5px;
+    color: #FDFBF9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .how-we-recommend {
+        padding: 50px 0;
+    }
+    
+    .recommend-title {
+        font-size: 28px;
+    }
+    
+    .step-arrow {
+        display: none;
+    }
+    
+    .step {
+        width: 100%;
+        max-width: 250px;
+    }
+}

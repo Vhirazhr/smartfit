@@ -1,0 +1,159 @@
+/* ============================================
+   EXPERT-TIPS.CSS - Expert Tips Section
+   ============================================ */
+
+.expert-section {
+    width: 100%;
+    background: #F9F5F2;
+    padding: 100px 0;
+}
+
+.expert-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.expert-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.expert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #C5B09F20;
+    padding: 8px 20px;
+    border-radius: 40px;
+    margin-bottom: 20px;
+}
+
+.expert-badge i {
+    color: #C5B09F;
+    font-size: 14px;
+}
+
+.expert-badge span {
+    color: #C5B09F;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.expert-title {
+    color: #1B1B1B;
+    font-size: 42px;
+    font-family: 'Lora', serif;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.expert-title span {
+    color: #C5B09F;
+}
+
+.expert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.expert-card {
+    background: #FDFBF9;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.expert-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 0;
+    background: #C5B09F;
+    transition: height 0.3s;
+}
+
+.expert-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.expert-card:hover::before {
+    height: 100%;
+}
+
+.expert-icon {
+    width: 60px;
+    height: 60px;
+    background: #C5B09F20;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.expert-icon i {
+    font-size: 28px;
+    color: #C5B09F;
+}
+
+.expert-card h3 {
+    font-size: 22px;
+    font-family: 'Marcellus', serif;
+    color: #1B1B1B;
+    margin-bottom: 15px;
+}
+
+.expert-card p {
+    font-size: 15px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.read-more {
+    color: #C5B09F;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s;
+}
+
+.read-more:hover {
+    gap: 12px;
+}
+
+/* Responsive Expert */
+@media (max-width: 992px) {
+    .expert-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .expert-section {
+        padding: 60px 0;
+    }
+    
+    .expert-title {
+        font-size: 32px;
+    }
+    
+    .expert-grid {
+        grid-template-columns: 1fr;
+    }
+}
