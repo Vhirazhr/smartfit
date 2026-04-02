@@ -133,7 +133,7 @@ b < 0.97 AND 0.89 < h < 1.20
 - Produces stable results across different users
 
 ## Implementation Example (Laravel Service)
-;
+
     public function classify($bust, $waist, $hip)
     {
         $b = $bust / $waist;
@@ -165,7 +165,7 @@ b < 0.97 AND 0.89 < h < 1.20
 
         return 'undefined';
     }
-;
+
 
 ## Core Features
 1. Anthropometric Input
