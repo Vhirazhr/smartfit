@@ -6,14 +6,68 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== 1. NAVBAR SCROLL EFFECT ==========
     const navbar = document.getElementById('navbar');
+    const isStaticNavbar = navbar?.dataset.static === 'true';
     if (navbar) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+        if (isStaticNavbar) {
+            navbar.classList.add('scrolled');
+        } else {
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+    }
+
+    // ========== 1.1 CONSISTENT NAVBAR ACTIVE STATE ==========
+    const navItems = Array.from(document.querySelectorAll('.nav-links a[data-nav]'));
+
+    function setActiveNav(key) {
+        navItems.forEach((item) => {
+            item.classList.toggle('active', item.dataset.nav === key);
         });
+    }
+
+    const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+    const isHowItWorksPage = pathname === '/how-it-works';
+    const isLandingPage = pathname === '/' || pathname === '/home';
+
+    if (isHowItWorksPage) {
+        setActiveNav('how-it-works');
+    } else if (isLandingPage) {
+        const sectionKeys = ['morphotypes', 'gallery', 'contact'];
+
+        function applyActiveFromHash() {
+            const currentHash = window.location.hash.replace('#', '');
+            if (sectionKeys.includes(currentHash)) {
+                setActiveNav(currentHash);
+            } else {
+                setActiveNav('home');
+            }
+        }
+
+        applyActiveFromHash();
+        window.addEventListener('hashchange', applyActiveFromHash);
+
+        window.addEventListener('scroll', function() {
+            if (window.location.hash) {
+                return;
+            }
+
+            const scrollProbe = window.scrollY + 160;
+            let activeKey = 'home';
+
+            sectionKeys.forEach((key) => {
+                const section = document.getElementById(key);
+                if (section && section.offsetTop <= scrollProbe) {
+                    activeKey = key;
+                }
+            });
+
+            setActiveNav(activeKey);
+        }, { passive: true });
     }
 
     // ========== 2. DISCOVER BUTTON - SCROLL TO MORPHOTYPES ==========
@@ -211,117 +265,5 @@ document.addEventListener('DOMContentLoaded', function() {
     backToTop.addEventListener('click', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    // ========== 13. MEASURE BODY INTEGRATION ==========
-    const measureForm = document.getElementById('measureBodyForm');
-    const demoBtn = document.getElementById('measureDemo');
-    const statusEl = document.getElementById('measureBodyStatus');
-    const resultBox = document.getElementById('measureBodyResult');
-
-    if (measureForm && statusEl && resultBox) {
-        const bustInput = document.getElementById('bustInput');
-        const waistInput = document.getElementById('waistInput');
-        const hipInput = document.getElementById('hipInput');
-        const submitBtn = document.getElementById('measureSubmit');
-
-        const morphotypeEl = document.getElementById('resultMorphotype');
-        const focusEl = document.getElementById('resultFocus');
-        const bRatioEl = document.getElementById('resultBRatio');
-        const hRatioEl = document.getElementById('resultHRatio');
-        const topsEl = document.getElementById('resultTops');
-        const bottomsEl = document.getElementById('resultBottoms');
-        const avoidEl = document.getElementById('resultAvoid');
-
-        function renderList(container, items) {
-            if (!container) {
-                return;
-            }
-
-            container.innerHTML = '';
-            (items || []).forEach((item) => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                container.appendChild(li);
-            });
-        }
-
-        function parseInput(input) {
-            return Number.parseFloat(input?.value || '');
-        }
-
-        async function submitMeasureBody(event) {
-            event.preventDefault();
-
-            const payload = {
-                bust: parseInput(bustInput),
-                waist: parseInput(waistInput),
-                hip: parseInput(hipInput),
-            };
-
-            if (Number.isNaN(payload.bust) || Number.isNaN(payload.waist) || Number.isNaN(payload.hip)) {
-                statusEl.textContent = 'Please fill bust, waist, and hip with valid numbers.';
-                resultBox.classList.add('hidden');
-                return;
-            }
-
-            statusEl.textContent = 'Analyzing your body ratio...';
-            submitBtn.disabled = true;
-
-            try {
-                const response = await fetch('/api/recommendations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const json = await response.json();
-
-                if (!response.ok || !json?.data?.classification) {
-                    const errorMessage = json?.message || 'Unable to process measurement right now.';
-                    throw new Error(errorMessage);
-                }
-
-                const classification = json.data.classification;
-                const recommendation = json.data.recommendation?.recommendations || {};
-
-                morphotypeEl.textContent = classification.label || classification.morphotype || '-';
-                focusEl.textContent = recommendation.focus || 'No recommendation focus available yet.';
-                bRatioEl.textContent = classification.ratios?.bust_to_waist ?? '-';
-                hRatioEl.textContent = classification.ratios?.hip_to_waist ?? '-';
-
-                renderList(topsEl, recommendation.tops);
-                renderList(bottomsEl, recommendation.bottoms);
-                renderList(avoidEl, recommendation.avoid);
-
-                resultBox.classList.remove('hidden');
-                statusEl.textContent = 'Analysis complete.';
-            } catch (error) {
-                statusEl.textContent = error.message || 'Request failed. Please try again.';
-                resultBox.classList.add('hidden');
-            } finally {
-                submitBtn.disabled = false;
-            }
-        }
-
-        measureForm.addEventListener('submit', submitMeasureBody);
-
-        if (demoBtn) {
-            demoBtn.addEventListener('click', function() {
-                if (bustInput) {
-                    bustInput.value = '92';
-                }
-                if (waistInput) {
-                    waistInput.value = '72';
-                }
-                if (hipInput) {
-                    hipInput.value = '98';
-                }
-                statusEl.textContent = 'Demo values loaded. Click Analyze My Morphotype.';
-            });
-        }
-    }
 
 });

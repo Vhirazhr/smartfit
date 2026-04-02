@@ -28,7 +28,6 @@
 <link rel="stylesheet" href="{{ asset('css/size-guide.css') }}">
 <link rel="stylesheet" href="{{ asset('css/blog-preview.css') }}">
 <link rel="stylesheet" href="{{ asset('css/before-after.css') }}">
-<link rel="stylesheet" href="{{ asset('css/measure-body.css') }}">
     @stack('styles')
 </head>
 <body>

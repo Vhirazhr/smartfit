@@ -257,9 +257,9 @@
         </div>
         
         <div class="morpho-action">
-            <a href="#measure-body" class="btn-primary">
+            <a href="#gallery" class="btn-primary">
                 <i class="fa-solid fa-chart-pie"></i>
-                Measure And Analyze Now
+                See Outfit Inspirations
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
             <p class="action-note">

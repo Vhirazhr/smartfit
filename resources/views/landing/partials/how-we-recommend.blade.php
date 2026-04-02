@@ -37,7 +37,7 @@
         </div>
         
         <div class="recommend-action">
-            <a href="#" class="btn-primary">
+            <a href="{{ route('how-it-works') }}" class="btn-primary">
                 Start Your Analysis
                 <i class="fa-solid fa-arrow-right"></i>
             </a>

@@ -6,6 +6,8 @@ use App\Http\Controllers\LandingController;
 // Landing page route
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+Route::view('/how-it-works', 'landing.how-it-works')->name('how-it-works');
+
 // Backward-compatible alias for templates or links using route('home')
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 
