@@ -1,0 +1,202 @@
+/* ============================================
+   MAIN.CSS - Global Styles & Reset
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #FDFBF9;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C5B09F;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #b39e8c;
+}
+
+/* ============================================
+   ANIMATIONS - Main CSS
+   ============================================ */
+
+/* Reveal Animation on Scroll */
+.reveal-item {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-item.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger Animation untuk Cards */
+.morpho-card.revealed { transition-delay: 0.1s; }
+.step.revealed { transition-delay: 0.1s; }
+.gallery-item.revealed { transition-delay: 0.1s; }
+
+/* Hero Fade In */
+.hero-content {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hero Title Stagger */
+.hero-tag {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-title {
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.hero-subtitle {
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.btn-discover {
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+/* Pulse Animation untuk Tombol */
+.btn-discover {
+    animation: fadeInUp 0.6s ease-out 0.6s both, pulse 2s ease-in-out infinite 2s;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(197, 176, 159, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 15px rgba(197, 176, 159, 0);
+    }
+}
+
+/* Notification Toast */
+.notification-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #1B1B1B;
+    color: #FDFBF9;
+    padding: 14px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    z-index: 9999;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.notification-toast.show {
+    transform: translateX(0);
+}
+
+.notification-toast.success i {
+    color: #4CAF50;
+}
+
+.notification-toast.error i {
+    color: #f44336;
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background: #C5B09F;
+    color: #1B1B1B;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #1B1B1B;
+    color: #C5B09F;
+    transform: translateY(-3px);
+}
+
+/* Hover Scale Effect */
+.morpho-card:hover,
+.step:hover,
+.expert-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    transition: all 0.3s ease;
+}
+
+/* Loading Spinner (Opsional) */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #C5B09F;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

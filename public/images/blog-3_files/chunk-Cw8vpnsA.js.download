@@ -1,0 +1,1 @@
+import{d as t}from"./chunk-BafhsWhh.js";function n(){const{data:n}=t();return n}export{n as u};

@@ -1,0 +1,133 @@
+/* ============================================
+   SIZE-GUIDE.CSS - Size Guide Preview Section
+   ============================================ */
+
+.sizeguide-section {
+    width: 100%;
+    background: #FDFBF9;
+    padding: 100px 0;
+}
+
+.sizeguide-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.sizeguide-content h2 {
+    font-size: 42px;
+    font-family: 'Lora', serif;
+    color: #1B1B1B;
+    margin-bottom: 20px;
+}
+
+.sizeguide-content h2 span {
+    color: #C5B09F;
+}
+
+.sizeguide-content p {
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.size-guide-list {
+    list-style: none;
+    margin-bottom: 30px;
+}
+
+.size-guide-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #E5E5E5;
+    font-family: 'Jost', sans-serif;
+}
+
+.size-guide-list li span:first-child {
+    font-weight: 600;
+    color: #1B1B1B;
+}
+
+.size-guide-list li span:last-child {
+    color: #838383;
+}
+
+.btn-size-guide {
+    background: #1B1B1B;
+    color: #FDFBF9;
+    padding: 12px 30px;
+    border-radius: 40px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-size-guide:hover {
+    background: #C5B09F;
+    color: #1B1B1B;
+}
+
+.sizeguide-image {
+    position: relative;
+}
+
+.sizeguide-image img {
+    width: 100%;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.sizeguide-badge {
+    position: absolute;
+    bottom: -20px;
+    right: -20px;
+    background: #C5B09F;
+    padding: 15px 25px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.sizeguide-badge span:first-child {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1B1B1B;
+    display: block;
+}
+
+.sizeguide-badge span:last-child {
+    font-size: 12px;
+    color: #1B1B1B;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Responsive Size Guide */
+@media (max-width: 992px) {
+    .sizeguide-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .sizeguide-content {
+        text-align: center;
+    }
+    
+    .sizeguide-content h2 {
+        font-size: 32px;
+    }
+    
+    .sizeguide-image {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
