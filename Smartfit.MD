@@ -39,9 +39,8 @@ Instead of relying on visual judgment, SmartFIT applies a ratio-based evaluation
 - 3D Avatar (Three.js + GLB)
 - Blender + Mixamo
 
-### Core Scientific Model (Morphotype Calculation)
-
-## Fundamental Concept
+## Core Scientific Model (Morphotype Calculation)
+### Fundamental Concept
 The body is divided into three main measurements:
 
 - Bust (B)
@@ -88,46 +87,39 @@ These thresholds are derived from:
 Using the ratio ranges, body shapes are classified as follows:
 
 1. Hourglass
-Bust significantly larger than waist
-Hip significantly larger than waist
-
+- Bust significantly larger than waist
+- Hip significantly larger than waist
 Condition:
-
 b > 1.24 AND h > 1.20
+
 2. Rectangle
-Bust ≈ Waist
-Hip ≈ Waist
-
+- Bust ≈ Waist
+- Hip ≈ Waist
 Condition:
-
 0.97 < b < 1.24 AND 0.89 < h < 1.20
+
 3. Spoon
-Bust ≈ Waist
-Hip larger than waist
-
+- Bust ≈ Waist
+- Hip larger than waist
 Condition:
-
 0.97 < b < 1.24 AND h > 1.20
+
 4. Triangle
-Bust smaller than waist
-Hip larger than waist
-
+- Bust smaller than waist
+- Hip larger than waist
 Condition:
-
 b < 0.97 AND h > 1.20
+
 5. Y Shape
-Bust larger than waist
-Hip ≈ Waist
-
+- Bust larger than waist
+- Hip ≈ Waist
 Condition:
-
 b > 1.24 AND 0.89 < h < 1.20
+
 6. Inverted U
-Bust smaller than waist
-Hip ≈ Waist
-
+- Bust smaller than waist
+- Hip ≈ Waist
 Condition:
-
 b < 0.97 AND 0.89 < h < 1.20
 
 ## Key Insight from the Model
@@ -141,36 +133,38 @@ b < 0.97 AND 0.89 < h < 1.20
 - Produces stable results across different users
 
 ## Implementation Example (Laravel Service)
-public function classify($bust, $waist, $hip)
 {
-    $b = $bust / $waist;
-    $h = $hip / $waist;
+    public function classify($bust, $waist, $hip)
+    {
+        $b = $bust / $waist;
+        $h = $hip / $waist;
 
-    if ($b > 1.24 && $h > 1.20) {
-        return 'hourglass';
+        if ($b > 1.24 && $h > 1.20) {
+            return 'hourglass';
+        }
+
+        if ($b > 1.24 && $h > 0.89 && $h < 1.20) {
+            return 'Y';
+        }
+
+        if ($b < 0.97 && $h > 1.20) {
+            return 'triangle';
+        }
+
+        if ($b > 0.97 && $b < 1.24 && $h > 1.20) {
+            return 'spoon';
+        }
+
+        if ($b > 0.97 && $b < 1.24 && $h > 0.89 && $h < 1.20) {
+            return 'rectangle';
+        }
+
+        if ($b < 0.97 && $h > 0.89 && $h < 1.20) {
+            return 'inverted_u';
+        }
+
+        return 'undefined';
     }
-
-    if ($b > 1.24 && $h > 0.89 && $h < 1.20) {
-        return 'Y';
-    }
-
-    if ($b < 0.97 && $h > 1.20) {
-        return 'triangle';
-    }
-
-    if ($b > 0.97 && $b < 1.24 && $h > 1.20) {
-        return 'spoon';
-    }
-
-    if ($b > 0.97 && $b < 1.24 && $h > 0.89 && $h < 1.20) {
-        return 'rectangle';
-    }
-
-    if ($b < 0.97 && $h > 0.89 && $h < 1.20) {
-        return 'inverted_u';
-    }
-
-    return 'undefined';
 }
 
 ## Core Features
