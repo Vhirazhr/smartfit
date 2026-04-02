@@ -6,6 +6,9 @@ use App\Http\Controllers\LandingController;
 // Landing page route
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+// Backward-compatible alias for templates or links using route('home')
+Route::get('/home', [LandingController::class, 'index'])->name('home');
+
 // Nanti untuk sistem pakar
 /*
 Route::prefix('smartfit')->group(function () {

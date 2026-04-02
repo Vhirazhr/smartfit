@@ -1,4 +1,4 @@
-<section class="morphotypes-section">
+<section id="morphotypes" class="morphotypes-section">
     <div class="morphotypes-container">
         <div class="section-header">
             <div class="section-badge">
@@ -257,9 +257,9 @@
         </div>
         
         <div class="morpho-action">
-            <a href="#" class="btn-primary">
+            <a href="#measure-body" class="btn-primary">
                 <i class="fa-solid fa-chart-pie"></i>
-                Find Your Body Type
+                Measure And Analyze Now
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
             <p class="action-note">

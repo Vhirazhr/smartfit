@@ -17,6 +17,9 @@
     
     <!-- 5. BODY TYPE QUIZ - Interaktif -->
     @include('landing.partials.morphotypes')
+
+    <!-- 5.1 MEASURE BODY - Integrated Analyzer -->
+    @include('landing.partials.measure-body')
     
     <!-- 6. FASHION GALLERY - Inspirasi Outfit -->
     @include('landing.partials.gallery')
