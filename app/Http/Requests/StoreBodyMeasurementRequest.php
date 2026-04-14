@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Models\BodyMeasurementAttempt;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
+use Throwable;
 
-class ClassifyMorphotypeRequest extends FormRequest
+class StoreBodyMeasurementRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -30,9 +32,9 @@ class ClassifyMorphotypeRequest extends FormRequest
         ];
     }
 
-    public function withValidator(Validator $validator): void
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
     {
-        $validator->after(function (Validator $validator): void {
+        $validator->after(function (\Illuminate\Validation\Validator $validator): void {
             $bust = (float) $this->input('bust', 0);
             $waist = (float) $this->input('waist', 0);
             $hip = (float) $this->input('hip', 0);
@@ -60,6 +62,32 @@ class ClassifyMorphotypeRequest extends FormRequest
         });
     }
 
+    protected function failedValidation(Validator $validator): void
+    {
+        $errorMessages = $validator->errors()->all();
+        $isConsistencyIssue = collect($errorMessages)->contains(function (string $message): bool {
+            return str_contains(strtolower($message), 're-measure') || str_contains(strtolower($message), 'difference appears extreme');
+        });
+
+        try {
+            BodyMeasurementAttempt::create([
+                'bust' => $this->toNullableFloat($this->input('bust')),
+                'waist' => $this->toNullableFloat($this->input('waist')),
+                'hip' => $this->toNullableFloat($this->input('hip')),
+                'status' => 'rejected',
+                'rejection_reasons' => $errorMessages,
+                'is_consistency_issue' => $isConsistencyIssue,
+                'measurement_standard' => 'ISO 8559-1',
+                'ip_address' => $this->ip(),
+                'user_agent' => substr((string) $this->userAgent(), 0, 512),
+            ]);
+        } catch (Throwable) {
+            // Ignore logging failure so validation error response is still returned.
+        }
+
+        parent::failedValidation($validator);
+    }
+
     public function messages(): array
     {
         return [
@@ -74,4 +102,14 @@ class ClassifyMorphotypeRequest extends FormRequest
             'hip.between' => 'Hip must be within the expected human range.',
         ];
     }
+
+    private function toNullableFloat(mixed $value): ?float
+    {
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        return (float) $value;
+    }
+
 }

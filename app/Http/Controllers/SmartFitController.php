@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBodyMeasurementRequest;
+use App\Models\BodyMeasurement;
+use App\Models\BodyMeasurementAttempt;
+use App\Services\MorphotypeService;
+use App\Services\RecommendationService;
 use Illuminate\Http\Request;
 
 class SmartFitController extends Controller
 {
+    public function __construct(
+        private readonly MorphotypeService $morphotypeService,
+        private readonly RecommendationService $recommendationService
+    ) {
+    }
+
     /**
      * Halaman start setelah klik Discover
      */
@@ -40,25 +51,38 @@ class SmartFitController extends Controller
             'style_preference' => 'required|in:Casual,Formal,Bohemian,Classic,Sporty',
             'color_tone' => 'required|in:Light,Bright,Neutral,Dark,Earth'
         ]);
-        
+
         $bodyType = $request->body_type;
         $stylePreference = $request->style_preference;
         $colorTone = $request->color_tone;
-        
-        $recommendations = $this->getRecommendationsByBodyType($bodyType, $stylePreference, $colorTone);
-        
+
+        $morphotype = $this->mapKnownBodyTypeToMorphotype($bodyType);
+        $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
+        $recommendationData = $recommendationPayload['recommendations'] ?? [];
+
+        $descriptionMap = [
+            'Hourglass' => 'Balanced bust and hips with a clearly defined, narrow waist.',
+            'Rectangle' => 'Bust and hip are fairly equal with minimal waist definition.',
+            'Spoon' => 'Hips wider than bust with a defined waist and rounded lower body.',
+            'Triangle' => 'Hips wider than shoulders with a defined waist.',
+            'Inverted Triangle' => 'Shoulders or bust wider than hips with minimal waist definition.',
+        ];
+
         session([
             'body_type' => $bodyType,
             'style_preference' => $stylePreference,
             'color_tone' => $colorTone,
-            'description' => $recommendations['description'],
-            'recommendations' => $recommendations['recommendations'],
-            'avoid' => $recommendations['avoid'],
-            'style_tip' => $recommendations['style_tip'] ?? '',
-            'color_tip' => $recommendations['color_tip'] ?? '',
+            'description' => $descriptionMap[$bodyType] ?? 'Body type profile is available for this selection.',
+            'recommendation_focus' => $recommendationData['focus'] ?? '',
+            'recommendation_tops' => $recommendationData['tops'] ?? [],
+            'recommendation_bottoms' => $recommendationData['bottoms'] ?? [],
+            'recommendations' => array_merge($recommendationData['tops'] ?? [], $recommendationData['bottoms'] ?? []),
+            'avoid' => $recommendationData['avoid'] ?? [],
+            'style_tip' => $this->getStyleTip($stylePreference),
+            'color_tip' => $this->getColorTip($colorTone),
             'source' => 'manual'
         ]);
-        
+
         return redirect()->route('smartfit.result');
     }
     
@@ -77,38 +101,63 @@ class SmartFitController extends Controller
     /**
      * Proses kalkulasi dengan forward chaining
      */
-    public function calculate(Request $request)
+    public function calculate(StoreBodyMeasurementRequest $request)
     {
-        $request->validate([
-            'bust' => 'required|numeric|min:50|max:200',
-            'waist' => 'required|numeric|min:40|max:200',
-            'hip' => 'required|numeric|min:50|max:200',
-        ]);
-        
-        $bust = $request->bust;
-        $waist = $request->waist;
-        $hip = $request->hip;
-        
-        $bwRatio = round($bust / $waist, 2);
-        $hwRatio = round($hip / $waist, 2);
-        
-        // Forward Chaining Classification
-        $bodyType = $this->classifyBodyType($bwRatio, $hwRatio);
-        $recommendations = $this->getRecommendationsByBodyType($bodyType);
-        
-        session([
-            'body_type' => $bodyType,
-            'description' => $recommendations['description'],
-            'recommendations' => $recommendations['recommendations'],
-            'avoid' => $recommendations['avoid'],
-            'bw_ratio' => $bwRatio,
-            'hw_ratio' => $hwRatio,
+        $validated = $request->validated();
+
+        $bust = (float) $validated['bust'];
+        $waist = (float) $validated['waist'];
+        $hip = (float) $validated['hip'];
+
+        $classification = $this->morphotypeService->classify($bust, $waist, $hip);
+        $recommendationPayload = $this->recommendationService->forMorphotype($classification['morphotype']);
+        $recommendationData = $recommendationPayload['recommendations'] ?? [];
+
+        $measurement = BodyMeasurement::create([
             'bust' => $bust,
             'waist' => $waist,
             'hip' => $hip,
+            'bust_to_waist_ratio' => (float) $classification['ratios']['bust_to_waist'],
+            'hip_to_waist_ratio' => (float) $classification['ratios']['hip_to_waist'],
+            'morphotype' => $classification['morphotype'],
+            'morphotype_label' => $classification['label'],
+            'measurement_standard' => 'ISO 8559-1',
+            'source' => 'smartfit_web_wizard',
+            'ip_address' => $request->ip(),
+            'user_agent' => (string) $request->userAgent(),
+        ]);
+
+        BodyMeasurementAttempt::create([
+            'body_measurement_id' => $measurement->id,
+            'bust' => $bust,
+            'waist' => $waist,
+            'hip' => $hip,
+            'status' => 'accepted',
+            'rejection_reasons' => null,
+            'is_consistency_issue' => false,
+            'measurement_standard' => 'ISO 8559-1',
+            'ip_address' => $request->ip(),
+            'user_agent' => substr((string) $request->userAgent(), 0, 512),
+        ]);
+
+        session([
+            'body_measurement_id' => $measurement->id,
+            'body_type' => $classification['label'],
+            'description' => $recommendationData['focus'] ?? 'Measurement profile ready for styling recommendations.',
+            'recommendation_focus' => $recommendationData['focus'] ?? '',
+            'recommendation_tops' => $recommendationData['tops'] ?? [],
+            'recommendation_bottoms' => $recommendationData['bottoms'] ?? [],
+            'recommendations' => array_merge($recommendationData['tops'] ?? [], $recommendationData['bottoms'] ?? []),
+            'avoid' => $recommendationData['avoid'] ?? [],
+            'bw_ratio' => (float) $classification['ratios']['bust_to_waist'],
+            'hw_ratio' => (float) $classification['ratios']['hip_to_waist'],
+            'bust' => $bust,
+            'waist' => $waist,
+            'hip' => $hip,
+            'measurement_standard' => 'ISO 8559-1',
             'source' => 'calculated'
         ]);
-        
+
         return redirect()->route('smartfit.result');
     }
     
@@ -120,10 +169,14 @@ class SmartFitController extends Controller
         if (!session('body_type')) {
             return redirect()->route('smartfit.start');
         }
-        
+
         return view('smartfit.result', [
+            'measurementId' => session('body_measurement_id'),
             'bodyType' => session('body_type'),
             'description' => session('description'),
+            'recommendationFocus' => session('recommendation_focus'),
+            'recommendationTops' => session('recommendation_tops', []),
+            'recommendationBottoms' => session('recommendation_bottoms', []),
             'recommendations' => session('recommendations'),
             'avoid' => session('avoid'),
             'styleTip' => session('style_tip'),
@@ -135,113 +188,46 @@ class SmartFitController extends Controller
             'bust' => session('bust'),
             'waist' => session('waist'),
             'hip' => session('hip'),
+            'measurementStandard' => session('measurement_standard'),
             'source' => session('source')
         ]);
     }
-    
-    /**
-     * Klasifikasi body type berdasarkan rasio B/W dan H/W
-     */
-    private function classifyBodyType($bwRatio, $hwRatio)
+
+    private function mapKnownBodyTypeToMorphotype(string $bodyType): string
     {
-        if ($bwRatio > 1.24 && $hwRatio > 1.20) {
-            return 'Hourglass';
-        } elseif ($bwRatio >= 0.97 && $bwRatio <= 1.24 && $hwRatio > 1.20) {
-            return 'Spoon';
-        } elseif ($bwRatio >= 0.97 && $bwRatio <= 1.24 && $hwRatio >= 0.89 && $hwRatio <= 1.20) {
-            return 'Rectangle';
-        } elseif ($bwRatio < 0.97 && $hwRatio > 1.20) {
-            return 'Triangle';
-        } elseif ($bwRatio > 1.24 && $hwRatio < 0.89) {
-            return 'Inverted Triangle';
-        } else {
-            return 'Rectangle';
-        }
+        return match ($bodyType) {
+            'Hourglass' => 'hourglass',
+            'Rectangle' => 'rectangle',
+            'Spoon' => 'spoon',
+            'Triangle' => 'triangle',
+            'Inverted Triangle' => 'y_shape',
+            default => 'undefined',
+        };
     }
-    
-    /**
-     * Data rekomendasi berdasarkan body type (dengan tambahan style & color)
-     */
-    private function getRecommendationsByBodyType($bodyType, $stylePreference = null, $colorTone = null)
+
+    private function getStyleTip(string $stylePreference): string
     {
-        // Base data berdasarkan body type
-        $baseData = [
-            'Hourglass' => [
-                'description' => 'Balanced bust and hips with a clearly defined, narrow waist.',
-                'recommendations' => [
-                    'Wrap dresses and belted styles',
-                    'Fitted tops that define the waist',
-                    'V-neck and sweetheart necklines',
-                    'High-waisted pants and pencil skirts'
-                ],
-                'avoid' => ['Boxy, shapeless clothing', 'Oversized silhouettes']
-            ],
-            'Spoon' => [
-                'description' => 'Hips wider than bust with a defined waist and "shelf" at hips.',
-                'recommendations' => [
-                    'A-line skirts and wide-leg pants',
-                    'Statement necklaces and bold tops on upper body',
-                    'Dark, plain colors on bottom',
-                    'Boat neck and off-shoulder tops'
-                ],
-                'avoid' => ['Tight skirts that cling to hips', 'Horizontal stripes on hips']
-            ],
-            'Rectangle' => [
-                'description' => 'Bust and hip are fairly equal with minimal waist definition.',
-                'recommendations' => [
-                    'Peplum tops and belted dresses',
-                    'Layered accessories to create curves',
-                    'High-waisted skirts and pants',
-                    'Wrap styles to define waist'
-                ],
-                'avoid' => ['Oversized, shapeless cuts', 'Monochromatic looks without waist definition']
-            ],
-            'Triangle' => [
-                'description' => 'Hips wider than shoulders with a defined waist.',
-                'recommendations' => [
-                    'Bright colors and patterns on top',
-                    'Dark, solid colors on bottom',
-                    'Boat neck and off-shoulder tops',
-                    'A-line skirts that flow away from hips'
-                ],
-                'avoid' => ['Tight skirts that emphasize hips', 'Horizontal stripes on lower body']
-            ],
-            'Inverted Triangle' => [
-                'description' => 'Shoulders/bust wider than hips with minimal waist definition.',
-                'recommendations' => [
-                    'V-neck and scoop neck tops',
-                    'A-line skirts and flared pants',
-                    'Dark colors on top, lighter on bottom',
-                    'Simple tops, bold bottoms'
-                ],
-                'avoid' => ['Puff sleeves and shoulder pads', 'Halter necks that emphasize shoulders']
-            ]
+        $styleTips = [
+            'Casual' => 'Pair the silhouette with clean sneakers and a light outer layer for daily comfort.',
+            'Formal' => 'Use a structured blazer and refined footwear to keep proportions polished.',
+            'Bohemian' => 'Add texture and movement with layered accessories and fluid fabrics.',
+            'Classic' => 'Choose timeless tailoring and neutral accents for balanced elegance.',
+            'Sporty' => 'Keep lines practical with breathable layers and dynamic, supportive footwear.',
         ];
-        
-        $data = $baseData[$bodyType] ?? $baseData['Rectangle'];
-        
-        if ($stylePreference) {
-            $styleTips = [
-                'Casual' => 'Pair with sneakers, denim jacket, and minimal accessories for everyday comfort.',
-                'Formal' => 'Complete with structured blazer, classic pumps, and elegant handbag.',
-                'Bohemian' => 'Add layered necklaces, floppy hat, and fringe bag for free-spirited vibe.',
-                'Classic' => 'Timeless pieces with pearl accessories and neutral pumps.',
-                'Sporty' => 'Finish with white sneakers, baseball cap, and sporty backpack.'
-            ];
-            $data['style_tip'] = $styleTips[$stylePreference] ?? '';
-        }
-        
-        if ($colorTone) {
-            $colorTips = [
-                'Light' => 'Pastels, cream, white, and soft neutrals will brighten your look.',
-                'Bright' => 'Bold reds, royal blue, emerald green, and fuchsia make a statement.',
-                'Neutral' => 'Black, navy, beige, gray, and taupe for versatile elegance.',
-                'Dark' => 'Deep burgundy, forest green, charcoal, and navy for sophisticated edge.',
-                'Earth' => 'Olive green, terracotta, mustard, and rust brown for natural warmth.'
-            ];
-            $data['color_tip'] = $colorTips[$colorTone] ?? '';
-        }
-        
-        return $data;
+
+        return $styleTips[$stylePreference] ?? '';
+    }
+
+    private function getColorTip(string $colorTone): string
+    {
+        $colorTips = [
+            'Light' => 'Soft ivory, cream, and pastel tones create a bright and clean profile.',
+            'Bright' => 'Saturated red, cobalt, and emerald accents add high visual energy.',
+            'Neutral' => 'Black, navy, beige, and gray keep styling versatile across occasions.',
+            'Dark' => 'Deep charcoal, forest, and burgundy deliver a refined, anchored look.',
+            'Earth' => 'Terracotta, olive, rust, and sand tones bring warm natural balance.',
+        ];
+
+        return $colorTips[$colorTone] ?? '';
     }
 }

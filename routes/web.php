@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BodyMeasurementController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\SmartFitController;
 
@@ -17,4 +18,5 @@ Route::prefix('smartfit')->group(function () {
     Route::post('/calculate', [SmartFitController::class, 'calculate'])->name('smartfit.calculate');
     Route::get('/result', [SmartFitController::class, 'result'])->name('smartfit.result');
     Route::get('/select-body-type', [SmartFitController::class, 'selectBodyType'])->name('smartfit.select');
+    Route::get('/body-measurements', [BodyMeasurementController::class, 'index'])->name('smartfit.measurements.index');
 });
