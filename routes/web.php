@@ -2,18 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\SmartFitController;
 
 // Landing page route
 Route::get('/', [LandingController::class, 'index'])->name('landing');
-
-// Backward-compatible alias for templates or links using route('home')
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 
-// Nanti untuk sistem pakar
-/*
 Route::prefix('smartfit')->group(function () {
-    Route::get('/analyze', [SmartFitController::class, 'index'])->name('smartfit.analyze');
+    Route::get('/start', [SmartFitController::class, 'start'])->name('smartfit.start');
+    Route::get('/check-body-type', [SmartFitController::class, 'checkBodyType'])->name('smartfit.check');
+    Route::post('/known-body-type', [SmartFitController::class, 'processKnownBodyType'])->name('smartfit.known');
+    Route::get('/input-measurements', [SmartFitController::class, 'inputMeasurements'])->name('smartfit.input');
     Route::post('/calculate', [SmartFitController::class, 'calculate'])->name('smartfit.calculate');
-    Route::get('/result/{id}', [SmartFitController::class, 'result'])->name('smartfit.result');
+    Route::get('/result', [SmartFitController::class, 'result'])->name('smartfit.result');
+    Route::get('/select-body-type', [SmartFitController::class, 'selectBodyType'])->name('smartfit.select');
 });
-*/

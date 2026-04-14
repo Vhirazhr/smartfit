@@ -12,9 +12,9 @@
             <span class="text-italic">style</span>
             <span class="text-semibold">with us based on your body type</span>
         </p>
-        <button class="btn-discover" id="discoverBtn">
+         <a href="{{ route('smartfit.start') }}" class="btn-discover">
             <span>DISCOVER YOUR FIT</span>
             <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        </a>
     </div>
 </section>
