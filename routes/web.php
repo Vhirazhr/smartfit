@@ -8,6 +8,7 @@ use App\Http\Controllers\SmartFitController;
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 
+
 Route::prefix('smartfit')->group(function () {
     Route::get('/start', [SmartFitController::class, 'start'])->name('smartfit.start');
     Route::get('/check-body-type', [SmartFitController::class, 'checkBodyType'])->name('smartfit.check');

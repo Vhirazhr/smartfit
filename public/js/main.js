@@ -171,30 +171,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const target = document.querySelector(href);
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
+                    // Hitung offset untuk menghindari navbar menutup konten
+                    const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 80;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 15;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
                 }
             }
         });
     });
 
-    // ========== 10. TYPING ANIMATION FOR HERO (Opsional) ==========
-    const heroTitle = document.querySelector('.hero-title');
-    if (heroTitle && !heroTitle.hasAttribute('data-typed')) {
-        heroTitle.setAttribute('data-typed', 'true');
-        // Biarkan statis, animasi sudah dari fade
-    }
-
-    // ========== 11. NAVBAR MOBILE MENU (Jika ada) ==========
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const navLinks = document.querySelector('.nav-links');
-    if (mobileMenuBtn && navLinks) {
-        mobileMenuBtn.addEventListener('click', function() {
-            navLinks.classList.toggle('show');
-            this.classList.toggle('active');
-        });
-    }
-
-    // ========== 12. BACK TO TOP BUTTON ==========
+    // ========== 10. BACK TO TOP BUTTON ==========
     const backToTop = document.createElement('button');
     backToTop.className = 'back-to-top';
     backToTop.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
@@ -212,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // ========== 13. MEASURE BODY INTEGRATION ==========
+    // ========== 11. MEASURE BODY INTEGRATION ==========
     const measureForm = document.getElementById('measureBodyForm');
     const demoBtn = document.getElementById('measureDemo');
     const statusEl = document.getElementById('measureBodyStatus');
@@ -233,10 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const avoidEl = document.getElementById('resultAvoid');
 
         function renderList(container, items) {
-            if (!container) {
-                return;
-            }
-
+            if (!container) return;
             container.innerHTML = '';
             (items || []).forEach((item) => {
                 const li = document.createElement('li');
@@ -310,18 +296,91 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (demoBtn) {
             demoBtn.addEventListener('click', function() {
-                if (bustInput) {
-                    bustInput.value = '92';
-                }
-                if (waistInput) {
-                    waistInput.value = '72';
-                }
-                if (hipInput) {
-                    hipInput.value = '98';
-                }
+                if (bustInput) bustInput.value = '92';
+                if (waistInput) waistInput.value = '72';
+                if (hipInput) hipInput.value = '98';
                 statusEl.textContent = 'Demo values loaded. Click Analyze My Morphotype.';
             });
         }
     }
 
 });
+
+// ========== TAMBAHAN CSS UNTUK BACK TO TOP BUTTON (Opsional) ==========
+// Tambahkan CSS ini jika belum ada di file CSS terpisah
+const style = document.createElement('style');
+style.textContent = `
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #C5B09F;
+        color: #1B1B1B;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    .back-to-top:hover {
+        background: #b8a08d;
+        transform: translateY(-3px);
+    }
+    .reveal-item {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    .reveal-item.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .notification-toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #1B1B1B;
+        color: #FDFBF9;
+        padding: 12px 24px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 10000;
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .notification-toast.show {
+        transform: translateX(-50%) translateY(0);
+    }
+    .notification-toast.success i {
+        color: #4CAF50;
+    }
+    .notification-toast.error i {
+        color: #f44336;
+    }
+    .testimonial-card {
+        display: none;
+    }
+    .testimonial-card.active {
+        display: block;
+    }
+    .hidden {
+        display: none;
+    }
+`;
+document.head.appendChild(style);
