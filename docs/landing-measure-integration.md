@@ -24,3 +24,7 @@ Integrate body measurement input directly in the landing page and connect it to 
 ## Verification
 - GET `/` returns HTTP 200
 - POST `/api/recommendations` returns expected data payload
+
+## Related Module Documentation
+- Anthropometric wizard and web-flow standardization:
+   - `docs/smartfit-measurement-guidance-module.md`

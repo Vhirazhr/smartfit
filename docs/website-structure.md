@@ -29,6 +29,29 @@ This structure follows the SmartFIT working guideline:
 - `POST /api/morphotype/classify`
 - `POST /api/recommendations`
 
+## SmartFit Wizard Flow (Web)
+- `GET /smartfit/start`
+- `GET /smartfit/check-body-type`
+- `GET /smartfit/input-measurements`
+- `POST /smartfit/calculate`
+- `GET /smartfit/result`
+- `GET /smartfit/body-measurements`
+
+Core files for anthropometric input standardization:
+- `resources/views/smartfit/input-measurements.blade.php`
+- `public/css/smartfit-measure.css`
+- `app/Http/Requests/ClassifyMorphotypeRequest.php`
+- `app/Http/Controllers/SmartFitController.php`
+- `app/Models/BodyMeasurement.php`
+- `database/migrations/2026_04_14_000003_create_body_measurements_table.php`
+- `database/migrations/2026_04_14_000004_create_body_measurement_attempts_table.php`
+- `app/Http/Controllers/BodyMeasurementController.php`
+- `app/Models/BodyMeasurementAttempt.php`
+- `resources/views/smartfit/result.blade.php`
+- `public/css/smartfit-result.css`
+- `resources/views/smartfit/body-measurements.blade.php`
+- `public/css/smartfit-body-measurements.css`
+
 ## Threshold Source of Truth
 - Classification thresholds are centralized in `config/smartfit.php`
 - Validate threshold updates with feature tests:
