@@ -30,7 +30,7 @@
                         <span>Expert-Based Explanation</span>
                     </div>
                 </div>
-                <a href="#" class="btn-learn">Get Started</a>
+                <a href="{{ route('smartfit.start') }}" class="btn-learn">Get Started</a>
             </div>
         </div>
     </div>

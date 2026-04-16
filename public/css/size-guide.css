@@ -71,6 +71,8 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s;
+    display: inline-block;
+    text-decoration: none;
 }
 
 .btn-size-guide:hover {
@@ -111,7 +113,65 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-/* Responsive Size Guide */
+/* ========== TOAST NOTIFICATION (POJOK BAWAH) ========== */
+.sizeguide-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #1B1B1B;
+    color: #FDFBF9;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-family: 'Jost', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    max-width: 350px;
+}
+
+.sizeguide-toast.show {
+    transform: translateX(0);
+}
+
+.sizeguide-toast.success {
+    border-left: 4px solid #C5B09F;
+}
+
+.toast-icon {
+    font-size: 24px;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.toast-message {
+    font-size: 13px;
+    color: #C5B09F;
+}
+
+.toast-close {
+    cursor: pointer;
+    font-size: 20px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+/* Responsive */
 @media (max-width: 992px) {
     .sizeguide-container {
         grid-template-columns: 1fr;
@@ -129,5 +189,15 @@
     .sizeguide-image {
         max-width: 400px;
         margin: 0 auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .sizeguide-toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: none;
+        padding: 14px 20px;
     }
 }

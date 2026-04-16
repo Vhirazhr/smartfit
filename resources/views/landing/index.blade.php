@@ -3,7 +3,7 @@
 @section('title', 'SMARTfit - Expert Fashion System')
 
 @section('content')
- <!-- 1. HERO SECTION -->
+    <!-- 1. HERO SECTION -->
     @include('landing.partials.hero')
     
     <!-- 2. WHAT ARE WE? - Penjelasan Sistem -->
@@ -15,32 +15,32 @@
     <!-- 4. HOW WE RECOMMEND - Cara Kerja -->
     @include('landing.partials.how-we-recommend')
     
-    <!-- 5. BODY TYPE QUIZ - Interaktif -->
+    <!-- 5. SIZE GUIDE - Panduan Ukuran  -->
+    @include('landing.partials.size-guide')
+
+    <!-- 5.5. VIDEO TUTORIAL - Cara Mengukur Badan -->
+@include('landing.partials.video-tutorial')
+    
+    <!-- 6. BODY TYPE QUIZ - Interaktif -->
     @include('landing.partials.morphotypes')
 
-    <!-- 5.1 MEASURE BODY - Integrated Analyzer -->
-    @include('landing.partials.measure-body')
+    <!-- 7. MEASURE BODY - Integrated Analyzer -->
     
-    <!-- 6. FASHION GALLERY - Inspirasi Outfit -->
+    
+    <!-- 8. FASHION GALLERY - Inspirasi Outfit -->
     @include('landing.partials.gallery')
     
-    <!-- 7. BEFORE AFTER TRANSFORMATION - Contoh Nyata -->
-    @include('landing.partials.before-after')
     
-    <!-- 8. EXPERT TIPS - Tips dari Stylist -->
+    <!-- 10. EXPERT TIPS - Tips dari Stylist -->
     @include('landing.partials.expert-tips')
     
-    <!-- 9. SIZE GUIDE - Panduan Ukuran -->
-    @include('landing.partials.size-guide')
+    <!-- 11. TESTIMONIALS - Testimoni Pengguna -->
     
-    <!-- 10. TESTIMONIALS - Testimoni Pengguna -->
-    @include('landing.partials.testimonials')
-    
-    <!-- 11. BLOG PREVIEW - Artikel Terkini -->
+    <!-- 12. BLOG PREVIEW - Artikel Terkini -->
     @include('landing.partials.blog-preview')
     
-    <!-- 12. NEWSLETTER - Subscribe -->
-    @include('landing.partials.newsletter')
+    <!-- 13. NEWSLETTER - Subscribe -->
+
 @endsection
 
 @push('scripts')
@@ -91,7 +91,6 @@
                 e.preventDefault();
                 const email = newsletterInput?.value;
                 if (email && email.includes('@')) {
-                    // Kirim ke backend nanti
                     alert('Terima kasih telah berlangganan!');
                     newsletterInput.value = '';
                 } else {

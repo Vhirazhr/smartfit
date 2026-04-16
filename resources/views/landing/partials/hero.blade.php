@@ -1,6 +1,8 @@
 <section class="hero">
     <div class="hero-bg">
-        <img src="{{ asset('images/hero-bg.jpg') }}" alt="Hero Background" class="hero-image">
+        <video autoplay muted loop playsinline preload="metadata" class="hero-video">
+            <source src="{{ asset('videos/dior-campaign.mp4') }}" type="video/mp4">
+        </video>
     </div>
     <div class="hero-content">
         <div class="hero-tag">

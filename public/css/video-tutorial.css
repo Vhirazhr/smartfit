@@ -1,0 +1,384 @@
+/* ============================================
+   VIDEO-TUTORIAL.CSS - Panduan Video Mengukur Badan
+   ============================================ */
+
+.video-tutorial-section {
+    padding: 80px 0;
+    /* BACKGROUND UTAMA: WARM EARTHY TONE (TIDAK MONOTON) */
+    background: linear-gradient(120deg, #FDF8F5 0%, #F5EDE8 50%, #EDE4DC 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Elemen dekoratif: Lingkaran blur di background */
+.video-tutorial-section::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -150px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(197, 176, 159, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.video-tutorial-section::after {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(197, 176, 159, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.video-tutorial-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header Section */
+.video-tutorial-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-badge {
+    display: inline-block;
+    background: #C5B09F20;
+    color: #C5B09F;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.video-tutorial-header h2 {
+    font-size: 38px;
+    font-family: 'Lora', serif;
+    color: #1B1B1B;
+    margin-bottom: 16px;
+}
+
+.video-tutorial-header h2 span {
+    color: #C5B09F;
+}
+
+.video-tutorial-header p {
+    font-size: 16px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Wrapper Video */
+.video-tutorial-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: start;
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+/* Thumbnail Video */
+.video-thumbnail {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+}
+
+.video-thumbnail:hover {
+    transform: scale(1.02);
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.video-thumbnail:hover .play-overlay {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.play-button {
+    width: 70px;
+    height: 70px;
+    background: #C5B09F;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.play-button i {
+    font-size: 28px;
+    color: #1B1B1B;
+    margin-left: 5px;
+}
+
+.video-thumbnail:hover .play-button {
+    transform: scale(1.1);
+    background: #d4c3b5;
+}
+
+.video-duration {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    backdrop-filter: blur(4px);
+}
+
+/* Info Video */
+.video-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.video-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: #1B1B1B;
+}
+
+.video-title i {
+    font-size: 24px;
+    color: #FF0000;
+}
+
+.video-channel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+}
+
+.video-channel i {
+    font-size: 18px;
+    color: #C5B09F;
+}
+
+.video-description {
+    background: #FDFBF9;
+    padding: 16px;
+    border-radius: 16px;
+    margin: 8px 0;
+}
+
+.video-description p {
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+    color: #1B1B1B;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.video-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #1B1B1B;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #FDFBF9;
+    font-size: 14px;
+    font-family: 'Jost', sans-serif;
+}
+
+.tip-item i {
+    color: #C5B09F;
+    font-size: 18px;
+    width: 24px;
+}
+
+.video-credit {
+    font-size: 12px;
+    font-family: 'Jost', sans-serif;
+    color: #838383;
+    text-align: right;
+    margin-top: 8px;
+}
+
+/* Modal Popup */
+.video-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-modal-content {
+    width: 90%;
+    max-width: 1000px;
+    background: #1B1B1B;
+    border-radius: 20px;
+    overflow: hidden;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.video-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: #1B1B1B;
+    border-bottom: 1px solid #333;
+}
+
+.video-modal-header h3 {
+    color: #FDFBF9;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    margin: 0;
+}
+
+.video-modal-close {
+    color: #FDFBF9;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.video-modal-close:hover {
+    color: #C5B09F;
+}
+
+.video-modal-body {
+    padding: 0;
+}
+
+.video-responsive {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+}
+
+.video-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .video-tutorial-wrapper {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .video-tutorial-header h2 {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .video-tutorial-section {
+        padding: 60px 0;
+    }
+    
+    .video-tutorial-wrapper {
+        padding: 20px;
+    }
+    
+    .play-button {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .play-button i {
+        font-size: 20px;
+    }
+    
+    .video-title {
+        font-size: 14px;
+        flex-wrap: wrap;
+    }
+    
+    .video-tips {
+        padding: 16px;
+    }
+    
+    .tip-item {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-tutorial-header h2 {
+        font-size: 24px;
+    }
+    
+    .video-tutorial-header p {
+        font-size: 14px;
+    }
+}

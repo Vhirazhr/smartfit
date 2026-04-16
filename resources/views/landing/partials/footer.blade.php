@@ -7,7 +7,6 @@
             <p class="footer-desc">Expert system for fashion that helps you discover your body type and find your perfect outfit.</p>
             <div class="social-icons">
                 <i class="fab fa-facebook-f"></i>
-                <i class="fab fa-twitter"></i>
                 <i class="fab fa-instagram"></i>
                 <i class="fab fa-youtube"></i>
                 <i class="fab fa-pinterest"></i>
@@ -44,6 +43,6 @@
     </div>
     <div class="footer-bottom">
         <div class="footer-copyright">© 2026 SMARTfit. ALL RIGHTS RESERVED.</div>
-        <div class="footer-credit">Powered by <span>Forward Chaining Expert System</span></div>
+        <div class="footer-credit">Powered by <span>Rule Based Expert System</span></div>
     </div>
 </footer>

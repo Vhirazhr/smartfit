@@ -38,12 +38,11 @@ class SmartFitController extends Controller
         $request->validate([
             'body_type' => 'required|in:Hourglass,Rectangle,Spoon,Triangle,Inverted Triangle',
             'style_preference' => 'required|in:Casual,Formal,Bohemian,Classic,Sporty',
-            'color_tone' => 'required|in:Light,Bright,Neutral,Dark,Earth'
         ]);
         
         $bodyType = $request->body_type;
         $stylePreference = $request->style_preference;
-        $colorTone = $request->color_tone;
+        $colorTone = $request->color_tone ?? null;
         
         $recommendations = $this->getRecommendationsByBodyType($bodyType, $stylePreference, $colorTone);
         
@@ -62,12 +61,8 @@ class SmartFitController extends Controller
         return redirect()->route('smartfit.result');
     }
     
-
-
-
-
     /**
-     * Halaman form input antropometri ( nah iki ssat sing foward chaining)
+     * Halaman form input antropometri (forward chaining)
      */
     public function inputMeasurements()
     {
@@ -220,6 +215,7 @@ class SmartFitController extends Controller
         
         $data = $baseData[$bodyType] ?? $baseData['Rectangle'];
         
+        // Tambahan style tip jika ada
         if ($stylePreference) {
             $styleTips = [
                 'Casual' => 'Pair with sneakers, denim jacket, and minimal accessories for everyday comfort.',
@@ -231,6 +227,7 @@ class SmartFitController extends Controller
             $data['style_tip'] = $styleTips[$stylePreference] ?? '';
         }
         
+        // Tambahan color tip jika ada
         if ($colorTone) {
             $colorTips = [
                 'Light' => 'Pastels, cream, white, and soft neutrals will brighten your look.',
