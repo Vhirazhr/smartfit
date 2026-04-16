@@ -1,6 +1,27 @@
 <?php
 
 return [
+    'measurement_ranges' => [
+        'bust' => [
+            'min' => 60,
+            'max' => 170,
+        ],
+        'waist' => [
+            'min' => 50,
+            'max' => 160,
+        ],
+        'hip' => [
+            'min' => 70,
+            'max' => 180,
+        ],
+    ],
+
+    'consistency_rules' => [
+        'waist_to_hip_max_factor' => 1.14,
+        'waist_to_bust_max_factor' => 1.15,
+        'max_bust_hip_gap_cm' => 70,
+    ],
+
     'thresholds' => [
         'bust' => [
             'lower' => 0.97,
