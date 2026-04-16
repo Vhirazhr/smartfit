@@ -1,8 +1,8 @@
 <section class="blog-section">
     <div class="blog-container">
         <div class="blog-header">
-            <div class="blog-tag">LATEST FROM BLOG</div>
-            <h2 class="blog-title">Fashion Stories & Tips</h2>
+            <div class="blog-tag">LATEST FROM BLOG & NEWS</div>
+            <h2 class="blog-title">Fashion Stories</h2>
         </div>
         
         <div class="blog-grid">
@@ -58,8 +58,6 @@
             </div>
         </div>
         
-        <div class="gallery-btn">
-            <a href="#" class="btn-view-all">View All Articles →</a>
-        </div>
+       <a href="{{ route('articles.page') }}" class="btn-view-all">View All Articles →</a>
     </div>
 </section>

@@ -12,7 +12,11 @@
                 <li><span>XL (16-18)</span><span>Bust: 39-41" | Waist: 32-34" | Hips: 42-44"</span></li>
             </ul>
             
-            <button class="btn-size-guide" id="sizeGuideBtn">Get Full Size Guide →</button>
+<a href="{{ asset('files/size-guide.pdf') }}" 
+   class="btn-size-guide"
+   onclick="showDownloadToast(event)">
+    Get Full Size Guide →
+</a>
         </div>
         <div class="sizeguide-image">
             <img src="{{ asset('images/size-guide.jpg') }}" alt="Size Guide">
@@ -24,10 +28,45 @@
     </div>
 </section>
 
-@push('scripts')
 <script>
-document.getElementById('sizeGuideBtn')?.addEventListener('click', function() {
-    alert('Download our complete size guide PDF with detailed measurement instructions!');
-});
+function showDownloadToast(event) {
+    event.preventDefault();
+    
+    const downloadLink = event.currentTarget.href;
+    const toast = document.createElement('div');
+    toast.className = 'sizeguide-toast success';
+    toast.innerHTML = `
+        <div class="toast-icon">📄</div>
+        <div class="toast-content">
+            <div class="toast-title">Download Started!</div>
+            <div class="toast-message">Your size guide is being downloaded...</div>
+        </div>
+        <div class="toast-close">✕</div>
+    `;
+    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    toast.querySelector('.toast-close').onclick = () => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    };
+    
+    setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = downloadLink;
+        link.download = '';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.querySelector('.toast-icon').innerHTML = '✅';
+        toast.querySelector('.toast-title').innerHTML = 'Download Complete!';
+        toast.querySelector('.toast-message').innerHTML = 'Your size guide is ready! 📏';
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+        
+    }, 500);
+}
 </script>
-@endpush

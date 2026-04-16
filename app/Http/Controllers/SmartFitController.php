@@ -49,7 +49,6 @@ class SmartFitController extends Controller
         $request->validate([
             'body_type' => 'required|in:Hourglass,Rectangle,Spoon,Triangle,Inverted Triangle',
             'style_preference' => 'required|in:Casual,Formal,Bohemian,Classic,Sporty',
-            'color_tone' => 'required|in:Light,Bright,Neutral,Dark,Earth'
         ]);
 
         $bodyType = $request->body_type;
@@ -86,12 +85,8 @@ class SmartFitController extends Controller
         return redirect()->route('smartfit.result');
     }
     
-
-
-
-
     /**
-     * Halaman form input antropometri ( nah iki ssat sing foward chaining)
+     * Halaman form input antropometri (forward chaining)
      */
     public function inputMeasurements()
     {

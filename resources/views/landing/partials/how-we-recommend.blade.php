@@ -35,17 +35,4 @@
                 <p>Outfit + Visual Preview</p>
             </div>
         </div>
-        
-        <div class="recommend-action">
-            <a href="#" class="btn-primary">
-                Start Your Analysis
-                <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <p class="action-note">
-                <i class="fa-regular fa-clock"></i> 2 minutes
-                <i class="fa-regular fa-chart-line"></i> 81.9% accuracy
-                <i class="fa-regular fa-eye"></i> Visual preview
-            </p>
-        </div>
-    </div>
 </section>

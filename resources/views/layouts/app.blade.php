@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/morphotypes.css') }}">
     <link rel="stylesheet" href="{{ asset('css/smartfit-check.css') }}">
+<link rel="stylesheet" href="{{ asset('css/video-tutorial.css') }}">    
 <link rel="stylesheet" href="{{ asset('css/gallery.css') }}">
 <link rel="stylesheet" href="{{ asset('css/expert-tips.css') }}">
 <link rel="stylesheet" href="{{ asset('css/stats.css') }}">
@@ -30,6 +31,7 @@
 <link rel="stylesheet" href="{{ asset('css/blog-preview.css') }}">
 <link rel="stylesheet" href="{{ asset('css/before-after.css') }}">
 <link rel="stylesheet" href="{{ asset('css/measure-body.css') }}">
+<link rel="stylesheet" href="{{ asset('css/gallery2.css') }}"> 
     @stack('styles')
 </head>
 <body>
@@ -44,4 +46,43 @@
     <script src="{{ asset('js/main.js') }}"></script>
     @stack('scripts')
 </body>
+@stack('scripts')
+<script>
+    // Smooth scroll untuk anchor links dari halaman lain
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cek apakah ada hash di URL
+        if (window.location.hash) {
+            const targetId = window.location.hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+        
+        // Handle klik navbar links
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                // Cek apakah ini anchor link ke halaman yang sama
+                if (href.includes('#') && (href.startsWith('#') || href.startsWith(window.location.pathname + '#'))) {
+                    e.preventDefault();
+                    
+                    const targetId = href.split('#')[1];
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        // Update URL tanpa reload
+                        history.pushState(null, null, href);
+                    }
+                }
+            });
+        });
+    });
+</script>
 </html>

@@ -232,49 +232,4 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Jurnal Reference Card -->
-        <div class="journal-reference">
-            <div class="journal-icon">
-                <i class="fa-regular fa-file-lines"></i>
-            </div>
-            <div class="journal-content">
-                <h4>📄 Research Reference</h4>
-                <p class="journal-authors"><strong>Pandarum, R., Harlock, S.C., Hunter, L., & Leaf, G.A.V. (2020).</strong></p>
-                <p class="journal-title">"A normative method for the classification and assessment of women's 3-D scanned morphotypes"</p>
-                <p class="journal-pub"><em>International Journal of Clothing Science and Technology</em>, Vol. 32 No. 6, pp. 1-14</p>
-                <div class="journal-stats">
-                    <span><i class="fa-solid fa-chart-line"></i> Prediction Accuracy: <strong>81.9%</strong></span>
-                    <span><i class="fa-regular fa-user"></i> Sample: 342 women</span>
-                    <span><i class="fa-regular fa-building"></i> ISO 8559-1 Standard</span>
-                </div>
-            </div>
-            <div class="journal-citation">
-                <button class="btn-copy-citation" onclick="copyCitation()">
-                    <i class="fa-regular fa-copy"></i> Copy Citation
-                </button>
-            </div>
-        </div>
-        
-        <div class="morpho-action">
-            <a href="#measure-body" class="btn-primary">
-                <i class="fa-solid fa-chart-pie"></i>
-                Measure And Analyze Now
-                <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <p class="action-note">
-                <i class="fa-regular fa-clock"></i> Takes only 2 minutes • Accurate results based on scientific classification
-            </p>
-        </div>
-    </div>
 </section>
-
-@push('scripts')
-<script>
-function copyCitation() {
-    const citation = `Pandarum, R., Harlock, S.C., Hunter, L., & Leaf, G.A.V. (2020). A normative method for the classification and assessment of women's 3-D scanned morphotypes. International Journal of Clothing Science and Technology, 32(6), 1-14.`;
-    navigator.clipboard.writeText(citation);
-    alert('Citation copied to clipboard!');
-}
-</script>
-@endpush

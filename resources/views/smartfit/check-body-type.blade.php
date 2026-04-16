@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app_nonavbar')
 
 @section('title', 'SMARTfit - Do You Know Your Body Type?')
 
@@ -6,26 +6,11 @@
 <section class="smartfit-check">
     <div class="smartfit-check-container">
         
-        <!-- Progress Indicator -->
-        <div class="progress-indicator">
-            <div class="progress-step completed">
-                <span class="step-number">1</span>
-                <span class="step-label">Start</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step active">
-                <span class="step-number">2</span>
-                <span class="step-label">Body Type</span>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step">
-                <span class="step-number">3</span>
-                <span class="step-label">Result</span>
-            </div>
-        </div>
-        
         <!-- Main Card -->
         <div class="check-card">
+    <a href="{{ route('smartfit.start') }}" class="back-home-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
             <div class="card-header">
                 <div class="card-badge">SMARTfit</div>
                 <h2 class="card-title">Do You Know Your <span>Body Type</span>?</h2>
@@ -34,7 +19,7 @@
             
             <div class="options-grid">
                 
-                <!-- Option 1: Yes, I Know (sekarang langsung ke halaman select) -->
+                <!-- Option 1: Yes, I Know  -->
                 <a href="{{ route('smartfit.select') }}" class="option-card">
                     <div class="option-icon">
                         <i class="fa-regular fa-circle-check"></i>
