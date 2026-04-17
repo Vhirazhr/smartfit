@@ -6,6 +6,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\SmartFitController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\KnownBodyTypeController;
 
 // Landing page route
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -22,4 +23,10 @@ Route::prefix('smartfit')->group(function () {
     Route::get('/result', [SmartFitController::class, 'result'])->name('smartfit.result');
     Route::get('/select-body-type', [SmartFitController::class, 'selectBodyType'])->name('smartfit.select');
     Route::get('/body-measurements', [BodyMeasurementController::class, 'index'])->name('smartfit.measurements.index');
+});
+
+Route::prefix('known')->group(function () {
+    Route::get('/select-body-type', [KnownBodyTypeController::class, 'selectBodyType'])->name('known.select');
+    Route::post('/process', [KnownBodyTypeController::class, 'processKnownBodyType'])->name('known.process');
+    Route::get('/result', [KnownBodyTypeController::class, 'result'])->name('known.result');
 });
