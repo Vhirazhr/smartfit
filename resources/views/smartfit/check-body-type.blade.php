@@ -20,7 +20,7 @@
             <div class="options-grid">
                 
                 <!-- Option 1: Yes, I Know  -->
-                <a href="{{ route('smartfit.select') }}" class="option-card">
+                <a href="{{ route('known.select') }}" class="option-card">
                     <div class="option-icon">
                         <i class="fa-regular fa-circle-check"></i>
                     </div>
