@@ -7,13 +7,37 @@ use App\Http\Controllers\SmartFitController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\KnownBodyTypeController;
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\Admin\ExerciseController;
 
-// Landing page route
+// ================== LANDING ==================
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/articles', [ArticleController::class, 'articlesPage'])->name('articles.page');
 
+// ================== LOGIN ADMIN ==================
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+// ================== DASHBOARD ADMIN ==================
+Route::get('/admin/dashboard', function () {
+    if (!session()->has('admin')) {
+        return redirect('/admin/login');
+    }
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+// ================== EXERCISE ADMIN ==================
+Route::get('/admin/exercise', [ExerciseController::class, 'index']);
+Route::get('/admin/exercise/create', [ExerciseController::class, 'create']);
+Route::post('/admin/exercise/store', [ExerciseController::class, 'store']);
+Route::get('/admin/exercise/edit/{id}', [ExerciseController::class, 'edit']);
+Route::post('/admin/exercise/update/{id}', [ExerciseController::class, 'update']);
+Route::get('/admin/exercise/delete/{id}', [ExerciseController::class, 'destroy']);
+
+// ================== SMARTFIT ==================
 Route::prefix('smartfit')->group(function () {
     Route::get('/start', [SmartFitController::class, 'start'])->name('smartfit.start');
     Route::get('/check-body-type', [SmartFitController::class, 'checkBodyType'])->name('smartfit.check');
@@ -25,6 +49,7 @@ Route::prefix('smartfit')->group(function () {
     Route::get('/body-measurements', [BodyMeasurementController::class, 'index'])->name('smartfit.measurements.index');
 });
 
+// ================== KNOWN BODY TYPE ==================
 Route::prefix('known')->group(function () {
     Route::get('/select-body-type', [KnownBodyTypeController::class, 'selectBodyType'])->name('known.select');
     Route::post('/process', [KnownBodyTypeController::class, 'processKnownBodyType'])->name('known.process');
