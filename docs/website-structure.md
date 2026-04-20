@@ -35,7 +35,24 @@ This structure follows the SmartFIT working guideline:
 - `GET /smartfit/input-measurements`
 - `POST /smartfit/calculate`
 - `GET /smartfit/result`
+- `GET /smartfit/recommendation`
+- `POST /smartfit/get-recommendation`
+- `POST /smartfit/result/style-preference`
 - `GET /smartfit/body-measurements`
+
+Known-body-type flow routes:
+- `GET /known/select-body-type`
+- `POST /known/get-recommendation`
+- `GET /known/result`
+
+Result page interaction update:
+- `resources/views/smartfit/result.blade.php` now includes selectable Style Preference cards.
+- User can re-pick style directly on result page and submit `Get recommendation` while staying in `smartfit/*` flow.
+- `POST /smartfit/get-recommendation` updates focus, tops, bottoms, and avoid recommendation blocks based on selected style.
+- After submit, user is redirected to `GET /smartfit/recommendation` for a dedicated recommendation page (not merged into `smartfit/result`).
+- If session token expires during recommendation submit, app now redirects user back to `smartfit/result` with a warning banner instead of raw 419 page.
+- `resources/views/smartfit/recommendation.blade.php` displays the personalized recommendation showcase (main product, alternatives, and styling tips).
+- Known-body-type flow remains separate in `known/*` routes (`known.select`, `known.process`, `known.result`).
 
 Core files for anthropometric input standardization:
 - `resources/views/smartfit/input-measurements.blade.php`
