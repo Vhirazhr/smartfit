@@ -65,15 +65,17 @@ Changes:
 - Web validation now uses `StoreBodyMeasurementRequest` to log rejected attempts
 
 ### 5. Result Presentation
-- View: `resources/views/smartfit/result.blade.php`
-- Styles: `public/css/smartfit-result.css`
 
 Result screen shows:
-- Measurement summary (cm)
-- B/W and H/W ratios
-- Classified body type
-- Focus guidance, recommended tops/bottoms, and avoid list
-- Source metadata and measurement standard
+  - Focus guidance
+  - Recommended tops
+  - Recommended bottoms
+  - Avoid list
+  - `POST /smartfit/get-recommendation` no longer leaves users on raw 419 page
+  - Users are redirected back to `GET /smartfit/result` with an actionable message banner
+  - Main product recommendation card
+  - You May Also Like alternatives
+  - Styling tips cards based on body type
 
 ### 6. Measurement Analytics Dashboard
 - Controller: `app/Http/Controllers/BodyMeasurementController.php`

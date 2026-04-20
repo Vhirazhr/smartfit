@@ -44,4 +44,53 @@ class SmartFitMeasurementFlowTest extends TestCase
 
         $this->assertDatabaseCount('body_measurements', 0);
     }
+
+    public function test_it_updates_recommendation_after_style_preference_submission(): void
+    {
+        $response = $this
+            ->withSession([
+                'body_type' => 'Hourglass',
+                'description' => 'Initial recommendation focus',
+                'recommendation_focus' => 'Initial recommendation focus',
+                'recommendation_tops' => ['Wrap tops'],
+                'recommendation_bottoms' => ['Pencil skirts'],
+                'avoid' => ['Boxy oversized tops without waist shape'],
+                'source' => 'calculated',
+            ])
+            ->post(route('smartfit.get.recommendation'), [
+                'style_preference' => 'Formal',
+            ]);
+
+        $response
+            ->assertRedirect(route('smartfit.recommendation'))
+            ->assertSessionHas('style_preference', 'Formal')
+            ->assertSessionHas('recommendation_focus', 'Refine the silhouette with structured tailoring and polished details.')
+            ->assertSessionHas('style_tip', 'Use a structured blazer and refined footwear to keep proportions polished.')
+            ->assertSessionHas('recommendation_updated');
+
+        $this->assertContains('Structured blazers', session('recommendation_tops', []));
+        $this->assertContains('Tailored trousers', session('recommendation_bottoms', []));
+    }
+
+    public function test_recommendation_page_shows_personalized_recommendation_showcase_when_style_is_selected(): void
+    {
+        $response = $this
+            ->withSession([
+                'body_type' => 'Hourglass',
+                'style_preference' => 'Casual',
+                'description' => 'Focus description',
+                'recommendation_focus' => 'Focus description',
+                'recommendation_tops' => ['Wrap tops'],
+                'recommendation_bottoms' => ['Pencil skirts'],
+                'avoid' => ['Boxy oversized tops without waist shape'],
+                'source' => 'calculated',
+            ])
+            ->get(route('smartfit.recommendation'));
+
+        $response
+            ->assertOk()
+            ->assertSee('Your Personalized Recommendations')
+            ->assertSee('Fitted Ribbed T-Shirt')
+            ->assertSee('Styling Tips for Hourglass');
+    }
 }

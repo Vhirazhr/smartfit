@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <form action="{{ route('known.process') }}" method="POST" class="select-form">
+        <form action="{{ route('known.get.recommendation') }}" method="POST" class="select-form">
             @csrf
 
             <div class="form-card">

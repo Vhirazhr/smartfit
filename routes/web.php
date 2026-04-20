@@ -45,6 +45,9 @@ Route::prefix('smartfit')->group(function () {
     Route::get('/input-measurements', [SmartFitController::class, 'inputMeasurements'])->name('smartfit.input');
     Route::post('/calculate', [SmartFitController::class, 'calculate'])->name('smartfit.calculate');
     Route::get('/result', [SmartFitController::class, 'result'])->name('smartfit.result');
+    Route::get('/recommendation', [SmartFitController::class, 'recommendation'])->name('smartfit.recommendation');
+    Route::post('/get-recommendation', [SmartFitController::class, 'updateStylePreference'])->name('smartfit.get.recommendation');
+    Route::post('/result/style-preference', [SmartFitController::class, 'updateStylePreference'])->name('smartfit.result.style');
     Route::get('/select-body-type', [SmartFitController::class, 'selectBodyType'])->name('smartfit.select');
     Route::get('/body-measurements', [BodyMeasurementController::class, 'index'])->name('smartfit.measurements.index');
 });
@@ -52,6 +55,7 @@ Route::prefix('smartfit')->group(function () {
 // ================== KNOWN BODY TYPE ==================
 Route::prefix('known')->group(function () {
     Route::get('/select-body-type', [KnownBodyTypeController::class, 'selectBodyType'])->name('known.select');
+    Route::post('/get-recommendation', [KnownBodyTypeController::class, 'processKnownBodyType'])->name('known.get.recommendation');
     Route::post('/process', [KnownBodyTypeController::class, 'processKnownBodyType'])->name('known.process');
     Route::get('/result', [KnownBodyTypeController::class, 'result'])->name('known.result');
 });
