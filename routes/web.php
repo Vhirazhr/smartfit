@@ -17,8 +17,13 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/articles', [ArticleController::class, 'articlesPage'])->name('articles.page');
 
 // ================== LOGIN ADMIN ==================
-Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AdminAuthController::class, 'login']);
+// GET = tampilkan form login
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login.form');
+
+// POST = proses login
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login');
+
+// logout
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // ================== DASHBOARD ADMIN ==================
