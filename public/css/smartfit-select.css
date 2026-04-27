@@ -271,6 +271,12 @@
     transition: all 0.3s ease;
 }
 
+.shape-illustration i {
+    font-size: 28px;
+    color: #c5b09f;
+    transition: all 0.3s ease;
+}
+
 .option-box:hover .shape-illustration svg {
     transform: scale(1.05);
 }
@@ -281,6 +287,12 @@
 .option-box.selected .shape-illustration svg circle {
     stroke: #1B1B1B;
     stroke-width: 3;
+}
+
+.option-box.selected .shape-illustration i,
+.option-box input:checked + .option-content .shape-illustration i {
+    color: #1b1b1b;
+    transform: scale(1.08);
 }
 
 .option-info {

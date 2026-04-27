@@ -1,14 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ExerciseController;
+use App\Http\Controllers\Admin\FashionCategoryController;
+use App\Http\Controllers\Admin\FashionItemController;
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BodyMeasurementController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\KnownBodyTypeController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\SmartFitController;
-use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\KnownBodyTypeController;
-use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\Admin\ExerciseController;
+use Illuminate\Support\Facades\Route;
 
 // ================== LANDING ==================
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -28,9 +30,10 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 
 // ================== DASHBOARD ADMIN ==================
 Route::get('/admin/dashboard', function () {
-    if (!session()->has('admin')) {
+    if (! session()->has('admin')) {
         return redirect('/admin/login');
     }
+
     return view('admin.dashboard');
 })->name('admin.dashboard');
 
@@ -41,6 +44,22 @@ Route::post('/admin/exercise/store', [ExerciseController::class, 'store']);
 Route::get('/admin/exercise/edit/{id}', [ExerciseController::class, 'edit']);
 Route::post('/admin/exercise/update/{id}', [ExerciseController::class, 'update']);
 Route::get('/admin/exercise/delete/{id}', [ExerciseController::class, 'destroy']);
+
+// ================== FASHION CATEGORY ADMIN ==================
+Route::get('/admin/fashion-categories', [FashionCategoryController::class, 'index'])->name('admin.fashion-categories.index');
+Route::get('/admin/fashion-categories/create', [FashionCategoryController::class, 'create'])->name('admin.fashion-categories.create');
+Route::post('/admin/fashion-categories/store', [FashionCategoryController::class, 'store'])->name('admin.fashion-categories.store');
+Route::get('/admin/fashion-categories/edit/{id}', [FashionCategoryController::class, 'edit'])->name('admin.fashion-categories.edit');
+Route::post('/admin/fashion-categories/update/{id}', [FashionCategoryController::class, 'update'])->name('admin.fashion-categories.update');
+Route::post('/admin/fashion-categories/delete/{id}', [FashionCategoryController::class, 'destroy'])->name('admin.fashion-categories.delete');
+
+// ================== FASHION ITEM ADMIN ==================
+Route::get('/admin/fashion-items', [FashionItemController::class, 'index'])->name('admin.fashion-items.index');
+Route::get('/admin/fashion-items/create', [FashionItemController::class, 'create'])->name('admin.fashion-items.create');
+Route::post('/admin/fashion-items/store', [FashionItemController::class, 'store'])->name('admin.fashion-items.store');
+Route::get('/admin/fashion-items/edit/{id}', [FashionItemController::class, 'edit'])->name('admin.fashion-items.edit');
+Route::post('/admin/fashion-items/update/{id}', [FashionItemController::class, 'update'])->name('admin.fashion-items.update');
+Route::post('/admin/fashion-items/delete/{id}', [FashionItemController::class, 'destroy'])->name('admin.fashion-items.delete');
 
 // ================== SMARTFIT ==================
 Route::prefix('smartfit')->group(function () {

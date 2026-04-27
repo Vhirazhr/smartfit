@@ -54,6 +54,13 @@
     margin-bottom: 32px;
 }
 
+.gallery-empty-sidebar {
+    margin: 0;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: #838383;
+}
+
 .body-filter-btn {
     display: flex;
     align-items: center;
@@ -242,6 +249,19 @@
     align-self: flex-start;
 }
 
+.card-buy-link {
+    align-self: flex-start;
+    margin-top: 8px;
+    background: #1b1b1b;
+    color: #fdfbf9;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 24px;
+}
+
 .tag-style {
     background: rgba(255, 255, 255, 0.95);
     padding: 4px 12px;
@@ -257,6 +277,22 @@
 .load-more-container {
     text-align: center;
     margin-top: 50px;
+}
+
+.empty-gallery-state {
+    width: 100%;
+    text-align: center;
+    padding: 36px 20px;
+    border: 1px dashed #e6ddd6;
+    border-radius: 16px;
+    color: #838383;
+    font-family: 'Jost', sans-serif;
+}
+
+.empty-gallery-state i {
+    font-size: 26px;
+    color: #c5b09f;
+    margin-bottom: 10px;
 }
 
 .load-more-btn {
@@ -332,6 +368,21 @@
     font-family: 'Jost', sans-serif;
     font-size: 14px;
     opacity: 0.8;
+}
+
+.lightbox-purchase {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #c5b09f;
+    color: #1b1b1b;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .lightbox-close {

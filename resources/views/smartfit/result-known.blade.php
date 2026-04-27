@@ -203,14 +203,28 @@ const stylingTips = {
 };
 
 // Get data dari session
-let currentBodyType = "{{ strtolower(session('body_type', 'Hourglass')) }}";
+let currentBodyType = "{{ session('morphotype', 'hourglass') }}";
 let currentStyle = "{{ strtolower(session('style_preference', 'Formal')) }}";
 let currentProductIndex = 0;
 
+function getProductKey(bodyType) {
+    const key = String(bodyType || '').toLowerCase();
+
+    if (key === 'hourglass') return 'hourglass';
+    if (key === 'spoon' || key === 'triangle') return 'pear';
+    if (key === 'y_shape' || key === 'inverted_triangle' || key === 'inverted_u') return 'inverted_triangle';
+    if (key === 'rectangle' || key === 'u' || key === 'diamond') return 'rectangle';
+
+    return 'hourglass';
+}
+
 function getProducts() {
-    if (productsDatabase[currentBodyType] && productsDatabase[currentBodyType][currentStyle]) {
-        return productsDatabase[currentBodyType][currentStyle];
+    const bodyKey = getProductKey(currentBodyType);
+
+    if (productsDatabase[bodyKey] && productsDatabase[bodyKey][currentStyle]) {
+        return productsDatabase[bodyKey][currentStyle];
     }
+
     return [];
 }
 
@@ -291,7 +305,7 @@ function selectProduct(productId) {
 
 function renderTips() {
     const tipsGrid = document.getElementById('tipsGrid');
-    const tips = stylingTips[currentBodyType] || stylingTips.hourglass;
+    const tips = stylingTips[getProductKey(currentBodyType)] || stylingTips.hourglass;
     tipsGrid.innerHTML = tips.map(tip => `<div class="tip-card"><i class="${tip.icon}"></i><p>${tip.tip}</p></div>`).join('');
 }
 

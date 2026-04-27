@@ -25,6 +25,15 @@
                 </div>
             </div>
         </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 18px;">
+            <a href="{{ route('admin.fashion-categories.index') }}" class="btn-submit" style="text-decoration:none; width:auto; padding:10px 14px;">
+                <i class="fas fa-tags"></i> Kelola Kategori
+            </a>
+            <a href="{{ route('admin.fashion-items.index') }}" class="btn-submit" style="text-decoration:none; width:auto; padding:10px 14px;">
+                <i class="fas fa-tshirt"></i> Kelola Fashion Items
+            </a>
+        </div>
         
         <!-- Stats Cards -->
         <div class="stats-grid">
@@ -42,7 +51,7 @@
                     <i class="fas fa-tag"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>5</h3>
+                    <h3>9</h3>
                     <p>Body Types</p>
                 </div>
             </div>

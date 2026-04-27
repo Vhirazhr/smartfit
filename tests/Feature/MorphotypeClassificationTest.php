@@ -28,12 +28,27 @@ class MorphotypeClassificationTest extends TestCase
 
     public function test_it_classifies_y_shape(): void
     {
-        $this->assertClassification(130, 100, 110, 'y_shape', 'Y Shape');
+        $this->assertClassification(130, 100, 110, 'y_shape', 'Y');
+    }
+
+    public function test_it_classifies_inverted_triangle(): void
+    {
+        $this->assertClassification(130, 100, 88.5, 'inverted_triangle', 'Inverted Triangle');
     }
 
     public function test_it_classifies_inverted_u(): void
     {
         $this->assertClassification(95, 100, 110, 'inverted_u', 'Inverted U');
+    }
+
+    public function test_it_classifies_u(): void
+    {
+        $this->assertClassification(110, 100, 88.5, 'u', 'U');
+    }
+
+    public function test_it_classifies_diamond(): void
+    {
+        $this->assertClassification(95, 100, 88.5, 'diamond', 'Diamond');
     }
 
     public function test_it_returns_undefined_for_threshold_boundary_values(): void
