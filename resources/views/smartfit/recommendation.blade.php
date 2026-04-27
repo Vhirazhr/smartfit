@@ -41,12 +41,13 @@
         @php
             $mainProduct = $systemRecommendation['main_product'];
             $otherProducts = $systemRecommendation['other_products'];
+            $mainShopUrl = $mainProduct['shop_url'] ?? null;
         @endphp
 
         <article class="recommendation-main-card">
             <div class="recommendation-main-image">
                 <img
-                    src="{{ asset($mainProduct['main_image']) }}"
+                    src="{{ $mainProduct['main_image'] }}"
                     alt="{{ $mainProduct['name'] }}"
                     onerror="this.onerror=null;this.src='https://placehold.co/900x700/f5f0eb/1b1b1b?text=Image+Not+Found';"
                 >
@@ -55,7 +56,9 @@
                 <span class="recommendation-shop"><i class="fa-solid fa-store"></i>{{ $mainProduct['shop'] }}</span>
                 <h2>{{ $mainProduct['name'] }}</h2>
                 <p>{{ $mainProduct['description'] }}</p>
-                <div class="recommendation-price">{{ $mainProduct['price'] }}</div>
+                @if(!empty($mainProduct['price']))
+                    <div class="recommendation-price">{{ $mainProduct['price'] }}</div>
+                @endif
 
                 @if(!empty($mainProduct['detail_images']))
                     <div class="recommendation-detail-images">
@@ -64,7 +67,7 @@
                             @foreach($mainProduct['detail_images'] as $detailImage)
                                 <div class="recommendation-thumb">
                                     <img
-                                        src="{{ asset($detailImage) }}"
+                                        src="{{ $detailImage }}"
                                         alt="Detail {{ $mainProduct['name'] }}"
                                         onerror="this.onerror=null;this.src='https://placehold.co/240x240/f5f0eb/1b1b1b?text=Detail';"
                                     >
@@ -74,9 +77,13 @@
                     </div>
                 @endif
 
-                <a href="{{ $mainProduct['shop_url'] }}" target="_blank" rel="noopener" class="recommendation-shop-btn">
-                    Shop Now <i class="fa-solid fa-arrow-right"></i>
-                </a>
+                @if($mainShopUrl)
+                    <a href="{{ $mainShopUrl }}" target="_blank" rel="noopener" class="recommendation-shop-btn">
+                        Shop Now <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                @else
+                    <span class="recommendation-shop-btn" style="opacity:.6; pointer-events:none;">Store Link Unavailable</span>
+                @endif
             </div>
         </article>
 
@@ -93,13 +100,17 @@
                         <article class="recommendation-other-card">
                             <div class="recommendation-other-image">
                                 <img
-                                    src="{{ asset($other['main_image']) }}"
+                                    src="{{ $other['main_image'] }}"
                                     alt="{{ $other['name'] }}"
                                     onerror="this.onerror=null;this.src='https://placehold.co/460x360/f5f0eb/1b1b1b?text=Image';"
                                 >
                             </div>
                             <h4>{{ $other['name'] }}</h4>
-                            <p>{{ $other['price'] }} - {{ $other['shop'] }}</p>
+                            @if(!empty($other['price']))
+                                <p>{{ $other['price'] }} - {{ $other['shop'] }}</p>
+                            @else
+                                <p>{{ $other['shop'] }}</p>
+                            @endif
                         </article>
                     @endforeach
                 </div>
