@@ -227,7 +227,7 @@
         'fashionItems' => ($fashionItemsPayload ?? collect())->values()->all(),
         'oldStoresPayload' => old('stores_payload', '[]'),
         'deleteEndpointTemplate' => route('admin.dashboard.fashion-items.destroy', ['id' => '__ID__']),
-    ]) !!}
+    ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
 </script>
 <script>
     const initialData = JSON.parse(document.getElementById('dashboardInitialData').textContent || '{}');

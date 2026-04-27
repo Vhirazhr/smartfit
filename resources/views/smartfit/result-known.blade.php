@@ -83,8 +83,8 @@
 @endpush
 
 @push('scripts')
-<script id="knownRecommendedItemsData" type="application/json">{!! json_encode($recommendedItems ?? []) !!}</script>
-<script id="knownStylingTipsData" type="application/json">{!! json_encode($stylingTips ?? []) !!}</script>
+<script id="knownRecommendedItemsData" type="application/json">{!! json_encode($recommendedItems ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+<script id="knownStylingTipsData" type="application/json">{!! json_encode($stylingTips ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 <script>
 const recommendedItems = JSON.parse(document.getElementById('knownRecommendedItemsData').textContent || '[]');
 const stylingTips = JSON.parse(document.getElementById('knownStylingTipsData').textContent || '[]');

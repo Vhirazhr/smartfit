@@ -81,10 +81,6 @@ class FashionItem extends Model
         if (filled($this->image_path)) {
             $relativePath = ltrim(str_replace('\\', '/', (string) $this->image_path), '/');
 
-            if (is_file(public_path('storage/'.$relativePath))) {
-                return asset('storage/'.$relativePath);
-            }
-
             return route('media.fashion-items.show', ['path' => $relativePath]);
         }
 

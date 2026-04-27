@@ -141,6 +141,8 @@ class DashboardController extends Controller
         ], [
             'stores.required' => 'Tambahkan minimal satu toko penyedia.',
             'stores.min' => 'Tambahkan minimal satu toko penyedia.',
+            'image_file.required_if' => 'Upload gambar wajib diisi saat sumber gambar adalah Image Upload.',
+            'image_url.required_if' => 'Link gambar wajib diisi saat sumber gambar adalah Image URL.',
         ]);
 
         $category = $this->resolveCategoryFromStyle($validated['style_preference']);
