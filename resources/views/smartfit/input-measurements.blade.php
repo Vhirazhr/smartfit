@@ -39,7 +39,7 @@
 					<li><i class="fa-regular fa-person-standing"></i>Stand upright with a relaxed posture.</li>
 					<li><i class="fa-regular fa-ruler"></i>Use a flexible measuring tape in centimeters.</li>
 					<li><i class="fa-regular fa-minus"></i>Keep tape horizontal and snug, without compression.</li>
-					<li><i class="fa-regular fa-shirt"></i>Wear light or fitted clothing while measuring.</li>
+					<li><i class="fa-solid fa-tshirt"></i>Wear light or fitted clothing while measuring.</li>
 					<li><i class="fa-regular fa-repeat"></i>Re-measure when values look inconsistent.</li>
 				</ul>
 

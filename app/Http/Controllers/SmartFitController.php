@@ -527,13 +527,13 @@ class SmartFitController extends Controller
     {
         return [
             'hourglass' => [
-                ['icon' => 'fa-solid fa-shirt', 'text' => 'Highlight your waist with belted styles and fitted silhouettes.'],
+                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Highlight your waist with belted styles and fitted silhouettes.'],
                 ['icon' => 'fa-solid fa-arrow-up', 'text' => 'Choose V-necklines to elongate your upper body balance.'],
                 ['icon' => 'fa-solid fa-heart', 'text' => 'Wrap dresses and peplum tops are strong everyday options.'],
             ],
             'pear' => [
                 ['icon' => 'fa-solid fa-arrow-up', 'text' => 'Draw attention upward with statement necklines and shoulder details.'],
-                ['icon' => 'fa-solid fa-shirt', 'text' => 'Use A-line bottoms to smooth lower-body proportions.'],
+                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Use A-line bottoms to smooth lower-body proportions.'],
                 ['icon' => 'fa-solid fa-circle', 'text' => 'Keep bottom colors darker for cleaner visual balance.'],
             ],
             'rectangle' => [
@@ -543,7 +543,7 @@ class SmartFitController extends Controller
             ],
             'inverted_triangle' => [
                 ['icon' => 'fa-solid fa-arrow-down', 'text' => 'Balance upper width by adding texture on bottom pieces.'],
-                ['icon' => 'fa-solid fa-shirt', 'text' => 'Prefer softer shoulder construction with V-neck profiles.'],
+                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Prefer softer shoulder construction with V-neck profiles.'],
                 ['icon' => 'fa-solid fa-layer-group', 'text' => 'Choose clean upper layers and expressive lower silhouettes.'],
             ],
         ];

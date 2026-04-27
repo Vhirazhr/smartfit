@@ -67,15 +67,25 @@ Changes:
 ### 5. Result Presentation
 
 Result screen shows:
+- `GET /smartfit/result` for measurement summary + style selection
   - Focus guidance
   - Recommended tops
   - Recommended bottoms
   - Avoid list
-  - `POST /smartfit/get-recommendation` no longer leaves users on raw 419 page
-  - Users are redirected back to `GET /smartfit/result` with an actionable message banner
+- `POST /smartfit/get-recommendation` updates style-based recommendation context
+- Footer CTA on `GET /smartfit/result` now submits style selection directly to recommendation route
+  - if style is selected: submit and redirect to `GET /smartfit/recommendation`
+  - if style is not selected: panel is highlighted and scrolled into view
+- `GET /smartfit/recommendation` renders the dedicated recommendation page:
   - Main product recommendation card
   - You May Also Like alternatives
   - Styling tips cards based on body type
+- CSRF/session-expired submit on recommendation action is handled gracefully:
+  - no raw 419 page for this flow
+  - redirects back to `GET /smartfit/result` with actionable message
+- Icon compatibility stabilization:
+  - shared Font Awesome CDN updated to `6.5.2` on main SmartFit layouts
+  - SmartFit result/recommendation icons normalized to supported class variants
 
 ### 6. Measurement Analytics Dashboard
 - Controller: `app/Http/Controllers/BodyMeasurementController.php`
@@ -112,6 +122,7 @@ When rejected, users are prompted to re-measure.
 5. Measurement and derived values are stored in `body_measurements`
 6. Accepted/rejected attempt is logged to `body_measurement_attempts`
 7. User is redirected to `/smartfit/result` with session-backed output
+8. After style submit, user is redirected to `/smartfit/recommendation`
 
 ## Tests
 - Existing API tests still pass:

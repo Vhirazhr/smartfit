@@ -445,6 +445,11 @@
     flex-direction: column;
 }
 
+.style-preference-panel.style-selection-needed {
+    border-color: #c5b09f;
+    box-shadow: 0 0 0 3px rgba(197, 176, 159, 0.25);
+}
+
 .style-preference-form {
     display: flex;
     flex-direction: column;
@@ -896,6 +901,14 @@
 .btn-primary {
     background: #1b1b1b;
     color: #fff;
+}
+
+.btn-recommendation-submit {
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
 }
 
 .btn-primary:hover {

@@ -23,7 +23,7 @@
         </div>
 
         <div class="recommendation-page-header">
-            <div class="recommendation-page-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="recommendation-page-icon"><i class="fa-solid fa-magic"></i></div>
             <h1>Your <span>Personalized</span> Recommendations</h1>
             <p>
                 Based on your <strong>{{ $bodyType }}</strong> body type and
@@ -130,7 +130,7 @@
                 <i class="fa-solid fa-images"></i> View Gallery
             </a>
             <a href="{{ route('smartfit.start') }}" class="btn-restart">
-                <i class="fa-solid fa-rotate-left"></i> Start Over
+                <i class="fa-solid fa-undo-alt"></i> Start Over
             </a>
         </div>
     </div>

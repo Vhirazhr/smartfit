@@ -52,6 +52,8 @@ Result page interaction update:
 - After submit, user is redirected to `GET /smartfit/recommendation` for a dedicated recommendation page (not merged into `smartfit/result`).
 - If session token expires during recommendation submit, app now redirects user back to `smartfit/result` with a warning banner instead of raw 419 page.
 - `resources/views/smartfit/recommendation.blade.php` displays the personalized recommendation showcase (main product, alternatives, and styling tips).
+- SmartFit pages use normalized Font Awesome icon classes with a shared CDN update to avoid missing icons in result/recommendation screens.
+- Footer CTA on `smartfit/result` now submits the selected style preference form directly; if no style is selected, it guides users back to the style panel.
 - Known-body-type flow remains separate in `known/*` routes (`known.select`, `known.process`, `known.result`).
 
 Core files for anthropometric input standardization:

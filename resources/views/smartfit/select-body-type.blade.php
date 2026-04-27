@@ -181,7 +181,7 @@
                             <input type="radio" name="style_preference" value="Casual">
                             <div class="style-card-content">
                                 <div class="style-card-icon">
-                                    <i class="fa-solid fa-shirt"></i>
+                                    <i class="fa-solid fa-tshirt"></i>
                                 </div>
                                 <div class="style-card-text">
                                     <span class="style-card-title">Casual</span>
