@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FashionItem extends Model
 {
@@ -15,6 +16,8 @@ class FashionItem extends Model
         'title',
         'description',
         'body_type',
+        'style_preference',
+        'color_tone',
         'image_source',
         'image_path',
         'image_url',
@@ -30,6 +33,11 @@ class FashionItem extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(FashionCategory::class, 'fashion_category_id');
+    }
+
+    public function stores(): HasMany
+    {
+        return $this->hasMany(FashionItemStore::class, 'fashion_item_id');
     }
 
     public function scopeActive($query)
@@ -71,7 +79,13 @@ class FashionItem extends Model
         }
 
         if (filled($this->image_path)) {
-            return asset('storage/'.$this->image_path);
+            $relativePath = ltrim(str_replace('\\', '/', (string) $this->image_path), '/');
+
+            if (is_file(public_path('storage/'.$relativePath))) {
+                return asset('storage/'.$relativePath);
+            }
+
+            return route('media.fashion-items.show', ['path' => $relativePath]);
         }
 
         return 'https://placehold.co/600x800/f5f0ed/1B1B1B?text=No+Image';

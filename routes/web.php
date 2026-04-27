@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExerciseController;
 use App\Http\Controllers\Admin\FashionCategoryController;
 use App\Http\Controllers\Admin\FashionItemController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\BodyMeasurementController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\KnownBodyTypeController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\SmartFitController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +19,9 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/home', [LandingController::class, 'index'])->name('home');
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/articles', [ArticleController::class, 'articlesPage'])->name('articles.page');
+Route::get('/media/fashion-items/{path}', [MediaController::class, 'showFashionItemImage'])
+    ->where('path', '.*')
+    ->name('media.fashion-items.show');
 
 // ================== LOGIN ADMIN ==================
 // GET = tampilkan form login
@@ -29,13 +34,9 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // ================== DASHBOARD ADMIN ==================
-Route::get('/admin/dashboard', function () {
-    if (! session()->has('admin')) {
-        return redirect('/admin/login');
-    }
-
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+Route::post('/admin/dashboard/fashion-items', [DashboardController::class, 'store'])->name('admin.dashboard.fashion-items.store');
+Route::post('/admin/dashboard/fashion-items/{id}/delete', [DashboardController::class, 'destroy'])->name('admin.dashboard.fashion-items.destroy');
 
 // ================== EXERCISE ADMIN ==================
 Route::get('/admin/exercise', [ExerciseController::class, 'index']);
