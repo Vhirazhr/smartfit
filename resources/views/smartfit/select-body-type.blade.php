@@ -51,111 +51,44 @@
                     </div>
                     <div class="field-error" id="bodyTypeError"></div>
 
+                    @php
+                        $manualTypeMap = $manualBodyTypes ?? config('smartfit.manual_body_types', []);
+                        $typeDescriptions = $descriptions ?? config('smartfit.descriptions', []);
+                        $bodyTypeCards = [
+                            ['label' => 'Hourglass', 'icon' => 'fa-hourglass-half'],
+                            ['label' => 'Y', 'icon' => 'fa-caret-up'],
+                            ['label' => 'Inverted Triangle', 'icon' => 'fa-play fa-rotate-270'],
+                            ['label' => 'Spoon', 'icon' => 'fa-spoon'],
+                            ['label' => 'Rectangle', 'icon' => 'fa-vector-square'],
+                            ['label' => 'U', 'icon' => 'fa-circle'],
+                            ['label' => 'Triangle', 'icon' => 'fa-caret-down'],
+                            ['label' => 'Inverted U', 'icon' => 'fa-arrows-up-down'],
+                            ['label' => 'Diamond', 'icon' => 'fa-gem'],
+                        ];
+                    @endphp
+
                     <div class="body-type-grid">
-                        <label class="option-box" data-shape="hourglass">
-                            <input type="radio" name="body_type" value="Hourglass">
-                            <div class="option-content">
-                                <div class="shape-illustration hourglass-shape">
-                                    <svg viewBox="0 0 100 120" width="70" height="84">
-                                        <path d="M35,15 L35,40 Q50,50 35,60 L35,90 Q45,100 35,105 L65,105 Q55,100 65,90 L65,60 Q50,50 65,40 L65,15 Z"
-                                              fill="none" stroke="#C5B09F" stroke-width="2.5" stroke-linecap="round"/>
-                                        <circle cx="50" cy="50" r="10" fill="none" stroke="#C5B09F" stroke-width="2"/>
-                                        <line x1="50" y1="15" x2="50" y2="105" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                    </svg>
+                        @foreach($bodyTypeCards as $card)
+                            @php
+                                $morphotypeKey = $manualTypeMap[$card['label']] ?? 'undefined';
+                                $description = $typeDescriptions[$morphotypeKey] ?? 'Body profile description is available.';
+                            @endphp
+                            <label class="option-box" data-shape="{{ strtolower(str_replace(' ', '-', $card['label'])) }}">
+                                <input type="radio" name="body_type" value="{{ $card['label'] }}" @checked(old('body_type') === $card['label'])>
+                                <div class="option-content">
+                                    <div class="shape-illustration">
+                                        <i class="fa-solid {{ $card['icon'] }}"></i>
+                                    </div>
+                                    <div class="option-info">
+                                        <span class="option-name">{{ $card['label'] }}</span>
+                                        <span class="option-desc">{{ $description }}</span>
+                                    </div>
+                                    <div class="option-check">
+                                        <i class="fa-regular fa-circle-check"></i>
+                                    </div>
                                 </div>
-                                <div class="option-info">
-                                    <span class="option-name">Hourglass</span>
-                                    <span class="option-desc">Balanced bust and hips with a clearly defined waist.</span>
-                                </div>
-                                <div class="option-check">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <label class="option-box" data-shape="rectangle">
-                            <input type="radio" name="body_type" value="Rectangle">
-                            <div class="option-content">
-                                <div class="shape-illustration rectangle-shape">
-                                    <svg viewBox="0 0 100 120" width="70" height="84">
-                                        <rect x="30" y="15" width="40" height="90" rx="8"
-                                              fill="none" stroke="#C5B09F" stroke-width="2.5" stroke-linecap="round"/>
-                                        <line x1="30" y1="45" x2="70" y2="45" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                        <line x1="50" y1="15" x2="50" y2="105" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                    </svg>
-                                </div>
-                                <div class="option-info">
-                                    <span class="option-name">Rectangle</span>
-                                    <span class="option-desc">Bust and hips are balanced with minimal waist definition.</span>
-                                </div>
-                                <div class="option-check">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <label class="option-box" data-shape="spoon">
-                            <input type="radio" name="body_type" value="Spoon">
-                            <div class="option-content">
-                                <div class="shape-illustration spoon-shape">
-                                    <svg viewBox="0 0 100 120" width="70" height="84">
-                                        <path d="M35,15 L35,45 Q40,55 35,65 L35,95 Q40,105 35,110 L65,110 Q60,105 65,95 L65,65 Q60,55 65,45 L65,15 Z"
-                                              fill="none" stroke="#C5B09F" stroke-width="2.5" stroke-linecap="round"/>
-                                        <circle cx="50" cy="35" r="8" fill="none" stroke="#C5B09F" stroke-width="2"/>
-                                        <line x1="50" y1="15" x2="50" y2="110" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                    </svg>
-                                </div>
-                                <div class="option-info">
-                                    <span class="option-name">Spoon</span>
-                                    <span class="option-desc">Hips are wider than the bust with a defined waist.</span>
-                                </div>
-                                <div class="option-check">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <label class="option-box" data-shape="triangle">
-                            <input type="radio" name="body_type" value="Triangle">
-                            <div class="option-content">
-                                <div class="shape-illustration triangle-shape">
-                                    <svg viewBox="0 0 100 120" width="70" height="84">
-                                        <polygon points="50,15 30,105 70,105"
-                                                 fill="none" stroke="#C5B09F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <line x1="30" y1="80" x2="70" y2="80" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                        <line x1="50" y1="15" x2="50" y2="105" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                    </svg>
-                                </div>
-                                <div class="option-info">
-                                    <span class="option-name">Triangle (Pear)</span>
-                                    <span class="option-desc">Hips are wider than shoulders with a defined waist.</span>
-                                </div>
-                                <div class="option-check">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <label class="option-box" data-shape="inverted">
-                            <input type="radio" name="body_type" value="Inverted Triangle">
-                            <div class="option-content">
-                                <div class="shape-illustration inverted-shape">
-                                    <svg viewBox="0 0 100 120" width="70" height="84">
-                                        <polygon points="30,15 70,15 50,105"
-                                                 fill="none" stroke="#C5B09F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <line x1="30" y1="35" x2="70" y2="35" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                        <line x1="50" y1="15" x2="50" y2="105" stroke="#C5B09F" stroke-width="1" stroke-dasharray="3" opacity="0.5"/>
-                                    </svg>
-                                </div>
-                                <div class="option-info">
-                                    <span class="option-name">Inverted Triangle</span>
-                                    <span class="option-desc">Shoulders or bust are broader than the hips.</span>
-                                </div>
-                                <div class="option-check">
-                                    <i class="fa-regular fa-circle-check"></i>
-                                </div>
-                            </div>
-                        </label>
+                            </label>
+                        @endforeach
                     </div>
                 </div>
 
@@ -387,12 +320,10 @@
     }
 }
 
-// Panggil function ini saat submit
-const submitBtn = document.getElementById('submitRecommendationBtn');
-if (submitBtn) {
-    submitBtn.addEventListener('click', function() {
-        saveToLocalStorage();
-    });
-}
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function () {
+            saveToLocalStorage();
+        });
+    }
 </script>
 @endpush

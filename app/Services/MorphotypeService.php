@@ -46,8 +46,8 @@ class MorphotypeService
             return 'y_shape';
         }
 
-        if ($bRatio < $bustLower && $hRatio > $hipUpper) {
-            return 'triangle';
+        if ($bRatio > $bustUpper && $hRatio < $hipLower) {
+            return 'inverted_triangle';
         }
 
         if ($bRatio > $bustLower && $bRatio < $bustUpper && $hRatio > $hipUpper) {
@@ -58,8 +58,20 @@ class MorphotypeService
             return 'rectangle';
         }
 
+        if ($bRatio > $bustLower && $bRatio < $bustUpper && $hRatio < $hipLower) {
+            return 'u';
+        }
+
+        if ($bRatio < $bustLower && $hRatio > $hipUpper) {
+            return 'triangle';
+        }
+
         if ($bRatio < $bustLower && $hRatio > $hipLower && $hRatio < $hipUpper) {
             return 'inverted_u';
+        }
+
+        if ($bRatio < $bustLower && $hRatio < $hipLower) {
+            return 'diamond';
         }
 
         return 'undefined';

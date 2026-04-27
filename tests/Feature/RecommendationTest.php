@@ -17,9 +17,24 @@ class RecommendationTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonPath('data.classification.morphotype', 'y_shape')
-            ->assertJsonPath('data.classification.label', 'Y Shape')
+            ->assertJsonPath('data.classification.label', 'Y')
             ->assertJsonPath('data.recommendation.morphotype', 'y_shape')
-            ->assertJsonPath('data.recommendation.recommendations.focus', 'Soften shoulder width while adding volume below the waist.');
+            ->assertJsonPath('data.recommendation.recommendations.focus', 'Soften upper width and add visual structure in the lower body.');
+    }
+
+    public function test_it_returns_recommendation_for_diamond_category(): void
+    {
+        $response = $this->postJson('/api/recommendations', [
+            'bust' => 95,
+            'waist' => 100,
+            'hip' => 88.5,
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.classification.morphotype', 'diamond')
+            ->assertJsonPath('data.classification.label', 'Diamond')
+            ->assertJsonPath('data.recommendation.morphotype', 'diamond');
     }
 
     public function test_it_returns_undefined_recommendation_for_boundary_case(): void
@@ -34,7 +49,7 @@ class RecommendationTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.classification.morphotype', 'undefined')
             ->assertJsonPath('data.recommendation.morphotype', 'undefined')
-            ->assertJsonPath('data.recommendation.recommendations.focus', 'Use fit-first styling and prioritize comfort and proportion checks.');
+            ->assertJsonPath('data.recommendation.recommendations.focus', 'Re-check measurement consistency and apply fit-first styling.');
     }
 
     public function test_it_validates_recommendation_input(): void

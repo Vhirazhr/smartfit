@@ -8,14 +8,14 @@ use App\Models\BodyMeasurementAttempt;
 use App\Services\MorphotypeService;
 use App\Services\RecommendationService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SmartFitController extends Controller
 {
     public function __construct(
         private readonly MorphotypeService $morphotypeService,
         private readonly RecommendationService $recommendationService
-    ) {
-    }
+    ) {}
 
     /**
      * Halaman start setelah klik Discover
@@ -24,7 +24,7 @@ class SmartFitController extends Controller
     {
         return view('smartfit.start');
     }
-    
+
     /**
      * Halaman cek body type (sudah tau atau belum)
      */
@@ -32,22 +32,27 @@ class SmartFitController extends Controller
     {
         return view('smartfit.check-body-type');
     }
-    
+
     /**
      * Halaman pilih body type + preferensi (setelah Yes, I know)
      */
     public function selectBodyType()
     {
-        return view('smartfit.select-body-type');
+        return view('smartfit.select-body-type', [
+            'manualBodyTypes' => config('smartfit.manual_body_types', []),
+            'descriptions' => config('smartfit.descriptions', []),
+        ]);
     }
-    
+
     /**
      * Proses dari user yang sudah tahu body type + preferensi
      */
     public function processKnownBodyType(Request $request)
     {
+        $manualBodyTypes = array_keys(config('smartfit.manual_body_types', []));
+
         $request->validate([
-            'body_type' => 'required|in:Hourglass,Rectangle,Spoon,Triangle,Inverted Triangle',
+            'body_type' => ['required', Rule::in($manualBodyTypes)],
             'style_preference' => 'required|in:Casual,Formal,Bohemian,Classic,Sporty',
         ]);
 
@@ -60,34 +65,29 @@ class SmartFitController extends Controller
         $recommendationData = $recommendationPayload['recommendations'] ?? [];
         $recommendationData = $this->applyStylePreferenceToRecommendations($recommendationData, $stylePreference);
 
-        $descriptionMap = [
-            'Hourglass' => 'Balanced bust and hips with a clearly defined, narrow waist.',
-            'Rectangle' => 'Bust and hip are fairly equal with minimal waist definition.',
-            'Spoon' => 'Hips wider than bust with a defined waist and rounded lower body.',
-            'Triangle' => 'Hips wider than shoulders with a defined waist.',
-            'Inverted Triangle' => 'Shoulders or bust wider than hips with minimal waist definition.',
-        ];
+        $descriptionMap = config('smartfit.descriptions', []);
 
         session([
             'body_type' => $bodyType,
+            'morphotype' => $morphotype,
             'style_preference' => $stylePreference,
             'color_tone' => $colorTone,
-            'description' => $descriptionMap[$bodyType] ?? 'Body type profile is available for this selection.',
+            'description' => $descriptionMap[$morphotype] ?? 'Body type profile is available for this selection.',
             'recommendation_focus' => $recommendationData['focus'] ?? '',
             'recommendation_tops' => $recommendationData['tops'] ?? [],
             'recommendation_bottoms' => $recommendationData['bottoms'] ?? [],
             'recommendations' => array_merge($recommendationData['tops'] ?? [], $recommendationData['bottoms'] ?? []),
             'avoid' => $recommendationData['avoid'] ?? [],
             'style_tip' => $this->getStyleTip($stylePreference),
-            'color_tip' => $this->getColorTip($colorTone),
-            'source' => 'manual'
+            'color_tip' => $this->getColorTip((string) $colorTone),
+            'source' => 'manual',
         ]);
 
         return redirect()
             ->route('smartfit.result')
             ->with('recommendation_updated', 'Recommendation has been updated based on your selected style preference.');
     }
-    
+
     /**
      * Halaman form input antropometri (forward chaining)
      */
@@ -95,7 +95,7 @@ class SmartFitController extends Controller
     {
         return view('smartfit.input-measurements');
     }
-    
+
     /**
      * Proses kalkulasi dengan forward chaining
      */
@@ -140,6 +140,7 @@ class SmartFitController extends Controller
 
         session([
             'body_measurement_id' => $measurement->id,
+            'morphotype' => $classification['morphotype'],
             'body_type' => $classification['label'],
             'description' => $recommendationData['focus'] ?? 'Measurement profile ready for styling recommendations.',
             'recommendation_focus' => $recommendationData['focus'] ?? '',
@@ -153,18 +154,18 @@ class SmartFitController extends Controller
             'waist' => $waist,
             'hip' => $hip,
             'measurement_standard' => 'ISO 8559-1',
-            'source' => 'calculated'
+            'source' => 'calculated',
         ]);
 
         return redirect()->route('smartfit.result');
     }
-    
+
     /**
      * Halaman hasil rekomendasi
      */
     public function result()
     {
-        if (!session('body_type')) {
+        if (! session('body_type')) {
             return redirect()->route('smartfit.start');
         }
 
@@ -203,18 +204,18 @@ class SmartFitController extends Controller
 
     public function recommendation()
     {
-        if (!session('body_type')) {
+        if (! session('body_type')) {
             return redirect()->route('smartfit.start');
         }
 
-        if (!session('style_preference')) {
+        if (! session('style_preference')) {
             return redirect()->route('smartfit.result')->with('recommendation_missing', 'Please select a style preference first.');
         }
 
         $bodyType = (string) session('body_type');
         $systemRecommendation = $this->buildSystemRecommendation($bodyType, session('style_preference'));
 
-        if (!$systemRecommendation) {
+        if (! $systemRecommendation) {
             return redirect()->route('smartfit.result')->with('recommendation_missing', 'Recommendation data is not available yet. Please try another style.');
         }
 
@@ -227,7 +228,7 @@ class SmartFitController extends Controller
 
     public function updateStylePreference(Request $request)
     {
-        if (!session('body_type')) {
+        if (! session('body_type')) {
             return redirect()->route('smartfit.start');
         }
 
@@ -260,26 +261,12 @@ class SmartFitController extends Controller
 
     private function mapKnownBodyTypeToMorphotype(string $bodyType): string
     {
-        return match ($bodyType) {
-            'Hourglass' => 'hourglass',
-            'Rectangle' => 'rectangle',
-            'Spoon' => 'spoon',
-            'Triangle' => 'triangle',
-            'Inverted Triangle' => 'y_shape',
-            default => 'undefined',
-        };
+        return $this->resolveMorphotypeKey($bodyType);
     }
 
     private function mapBodyTypeToMorphotype(string $bodyType): string
     {
-        return match ($this->mapBodyTypeToShapeKey($bodyType)) {
-            'hourglass' => 'hourglass',
-            'rectangle' => 'rectangle',
-            'spoon' => 'spoon',
-            'triangle' => 'triangle',
-            'inverted' => 'y_shape',
-            default => 'undefined',
-        };
+        return $this->resolveMorphotypeKey($bodyType);
     }
 
     private function getStyleTip(string $stylePreference): string
@@ -343,7 +330,7 @@ class SmartFitController extends Controller
             ],
         ];
 
-        if (!isset($styleOverlays[$stylePreference])) {
+        if (! isset($styleOverlays[$stylePreference])) {
             return $recommendationData;
         }
 
@@ -394,11 +381,11 @@ class SmartFitController extends Controller
 
     private function mapBodyTypeToProductKey(string $bodyType): string
     {
-        return match ($this->mapBodyTypeToShapeKey($bodyType)) {
+        return match ($this->resolveMorphotypeKey($bodyType)) {
             'hourglass' => 'hourglass',
-            'rectangle' => 'rectangle',
             'spoon', 'triangle' => 'pear',
-            'inverted' => 'inverted_triangle',
+            'y_shape', 'inverted_triangle', 'inverted_u' => 'inverted_triangle',
+            'rectangle', 'u', 'diamond' => 'rectangle',
             default => 'hourglass',
         };
     }
@@ -576,14 +563,48 @@ class SmartFitController extends Controller
 
     private function mapBodyTypeToShapeKey(string $bodyType): string
     {
-        return match (strtolower(trim($bodyType))) {
+        return match ($this->resolveMorphotypeKey($bodyType)) {
             'hourglass' => 'hourglass',
-            'rectangle' => 'rectangle',
             'spoon' => 'spoon',
-            'triangle', 'triangle (pear)', 'pear' => 'triangle',
-            'inverted triangle', 'y shape', 'y_shape', 'inverted u' => 'inverted',
+            'triangle' => 'triangle',
+            'y_shape', 'inverted_triangle', 'inverted_u' => 'inverted',
             default => 'rectangle',
         };
+    }
+
+    private function resolveMorphotypeKey(string $bodyType): string
+    {
+        $normalized = strtolower(trim($bodyType));
+        if ($normalized === '') {
+            return 'undefined';
+        }
+
+        $bodyTypes = config('smartfit.body_types', []);
+        if (in_array($normalized, $bodyTypes, true)) {
+            return $normalized;
+        }
+
+        foreach (config('smartfit.manual_body_types', []) as $label => $key) {
+            if (strtolower($label) === $normalized) {
+                return $key;
+            }
+        }
+
+        foreach (config('smartfit.labels', []) as $key => $label) {
+            if (strtolower($label) === $normalized) {
+                return $key;
+            }
+        }
+
+        $aliases = [
+            'triangle (pear)' => 'triangle',
+            'pear' => 'triangle',
+            'y shape' => 'y_shape',
+            'inverted' => 'inverted_triangle',
+            'u shape' => 'u',
+        ];
+
+        return $aliases[$normalized] ?? 'undefined';
     }
 
     private function presetMeasurementsByBodyType(string $bodyType): array

@@ -2,49 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\RecommendationService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class KnownBodyTypeController extends Controller
 {
+    public function __construct(private readonly RecommendationService $recommendationService) {}
+
     public function selectBodyType()
     {
-        return view('smartfit.select-body-type');
+        return view('smartfit.select-body-type', [
+            'manualBodyTypes' => config('smartfit.manual_body_types', []),
+            'descriptions' => config('smartfit.descriptions', []),
+        ]);
     }
-    
+
     public function processKnownBodyType(Request $request)
     {
+        $manualBodyTypes = config('smartfit.manual_body_types', []);
+        $allowedBodyTypes = array_keys($manualBodyTypes);
+
         $request->validate([
-            'body_type' => 'required|in:Hourglass,Rectangle,Spoon,Triangle,Inverted Triangle',
+            'body_type' => ['required', Rule::in($allowedBodyTypes)],
             'style_preference' => 'required|in:Casual,Formal,Bohemian,Classic,Sporty',
         ]);
-        
-        $bodyType = $request->body_type;
-        $stylePreference = $request->style_preference;
+
+        $bodyType = (string) $request->body_type;
+        $stylePreference = (string) $request->style_preference;
         $colorTone = $request->color_tone ?? null;
-        
-        $recommendations = $this->getRecommendationsByBodyType($bodyType, $stylePreference, $colorTone);
-        
+
+        $morphotype = $manualBodyTypes[$bodyType] ?? 'undefined';
+        $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
+        $recommendationData = $recommendationPayload['recommendations'] ?? [];
+
         session([
             'body_type' => $bodyType,
+            'morphotype' => $morphotype,
             'style_preference' => $stylePreference,
             'color_tone' => $colorTone,
-            'description' => $recommendations['description'],
-            'recommendations' => $recommendations['recommendations'],
-            'avoid' => $recommendations['avoid'],
-            'style_tip' => $recommendations['style_tip'] ?? '',
-            'color_tip' => $recommendations['color_tip'] ?? '',
-            'source' => 'known'
+            'description' => config('smartfit.descriptions.'.$morphotype, 'Body type profile is available for this selection.'),
+            'recommendation_focus' => $recommendationData['focus'] ?? '',
+            'recommendation_tops' => $recommendationData['tops'] ?? [],
+            'recommendation_bottoms' => $recommendationData['bottoms'] ?? [],
+            'recommendations' => array_merge($recommendationData['tops'] ?? [], $recommendationData['bottoms'] ?? []),
+            'avoid' => $recommendationData['avoid'] ?? [],
+            'style_tip' => $this->getStyleTip($stylePreference),
+            'color_tip' => $this->getColorTip((string) $colorTone),
+            'source' => 'known',
         ]);
-        
+
         return redirect()->route('known.result');
     }
-    
+
     public function result()
     {
-        if (!session('body_type')) {
+        if (! session('body_type')) {
             return redirect()->route('known.select');
         }
-        
+
         return view('smartfit.result-known', [
             'bodyType' => session('body_type'),
             'stylePreference' => session('style_preference'),
@@ -54,89 +70,33 @@ class KnownBodyTypeController extends Controller
             'avoid' => session('avoid'),
             'styleTip' => session('style_tip'),
             'colorTip' => session('color_tip'),
-            'source' => session('source')
+            'source' => session('source'),
         ]);
     }
-    
-    private function getRecommendationsByBodyType($bodyType, $stylePreference = null, $colorTone = null)
+
+    private function getStyleTip(string $stylePreference): string
     {
-        $baseData = [
-            'Hourglass' => [
-                'description' => 'Balanced bust and hips with a clearly defined, narrow waist.',
-                'recommendations' => [
-                    'Wrap dresses and belted styles',
-                    'Fitted tops that define the waist',
-                    'V-neck and sweetheart necklines',
-                    'High-waisted pants and pencil skirts'
-                ],
-                'avoid' => ['Boxy, shapeless clothing', 'Oversized silhouettes']
-            ],
-            'Spoon' => [
-                'description' => 'Hips wider than bust with a defined waist.',
-                'recommendations' => [
-                    'A-line skirts and wide-leg pants',
-                    'Statement necklaces and bold tops',
-                    'Dark, plain colors on bottom',
-                    'Boat neck and off-shoulder tops'
-                ],
-                'avoid' => ['Tight skirts that cling to hips', 'Horizontal stripes on hips']
-            ],
-            'Rectangle' => [
-                'description' => 'Bust and hip are fairly equal with minimal waist definition.',
-                'recommendations' => [
-                    'Peplum tops and belted dresses',
-                    'Layered accessories to create curves',
-                    'High-waisted skirts and pants',
-                    'Wrap styles to define waist'
-                ],
-                'avoid' => ['Oversized, shapeless cuts', 'Monochromatic looks']
-            ],
-            'Triangle' => [
-                'description' => 'Hips wider than shoulders with a defined waist.',
-                'recommendations' => [
-                    'Bright colors and patterns on top',
-                    'Dark, solid colors on bottom',
-                    'Boat neck and off-shoulder tops',
-                    'A-line skirts that flow away from hips'
-                ],
-                'avoid' => ['Tight skirts that emphasize hips', 'Horizontal stripes on lower body']
-            ],
-            'Inverted Triangle' => [
-                'description' => 'Shoulders/bust wider than hips with minimal waist definition.',
-                'recommendations' => [
-                    'V-neck and scoop neck tops',
-                    'A-line skirts and flared pants',
-                    'Dark colors on top, lighter on bottom',
-                    'Simple tops, bold bottoms'
-                ],
-                'avoid' => ['Puff sleeves and shoulder pads', 'Halter necks']
-            ]
+        $styleTips = [
+            'Casual' => 'Pair with sneakers and an easy outer layer for balanced daily style.',
+            'Formal' => 'Use structured tailoring to keep proportions polished and clean.',
+            'Bohemian' => 'Add layered textures and flowing pieces while keeping visual balance.',
+            'Classic' => 'Keep the silhouette timeless with neat cuts and refined neutral accents.',
+            'Sporty' => 'Choose breathable materials and practical cuts for dynamic movement.',
         ];
-        
-        $data = $baseData[$bodyType] ?? $baseData['Rectangle'];
-        
-        if ($stylePreference) {
-            $styleTips = [
-                'Casual' => 'Pair with sneakers, denim jacket, and minimal accessories.',
-                'Formal' => 'Complete with structured blazer and elegant handbag.',
-                'Bohemian' => 'Add layered necklaces and fringe bag.',
-                'Classic' => 'Timeless pieces with pearl accessories.',
-                'Sporty' => 'Finish with white sneakers and baseball cap.'
-            ];
-            $data['style_tip'] = $styleTips[$stylePreference] ?? '';
-        }
-        
-        if ($colorTone) {
-            $colorTips = [
-                'Light' => 'Pastels, cream, and soft neutrals will brighten your look.',
-                'Bright' => 'Bold reds, royal blue, and emerald green make a statement.',
-                'Neutral' => 'Black, navy, beige, and gray for versatile elegance.',
-                'Dark' => 'Deep burgundy and charcoal for sophisticated edge.',
-                'Earth' => 'Olive green, terracotta, and rust for natural warmth.'
-            ];
-            $data['color_tip'] = $colorTips[$colorTone] ?? '';
-        }
-        
-        return $data;
+
+        return $styleTips[$stylePreference] ?? '';
+    }
+
+    private function getColorTip(string $colorTone): string
+    {
+        $colorTips = [
+            'Light' => 'Soft ivory, cream, and pastel tones provide a bright profile.',
+            'Bright' => 'Saturated red, cobalt, and emerald add confident contrast.',
+            'Neutral' => 'Black, navy, beige, and gray keep outfits versatile.',
+            'Dark' => 'Deep charcoal, forest, and burgundy offer a refined finish.',
+            'Earth' => 'Terracotta, olive, rust, and sand bring warm natural balance.',
+        ];
+
+        return $colorTips[$colorTone] ?? '';
     }
 }
