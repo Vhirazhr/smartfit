@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBodyMeasurementRequest;
 use App\Models\BodyMeasurement;
 use App\Models\BodyMeasurementAttempt;
+use App\Models\FashionItem;
+use App\Models\FashionItemStore;
 use App\Services\MorphotypeService;
 use App\Services\RecommendationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class SmartFitController extends Controller
@@ -353,187 +356,162 @@ class SmartFitController extends Controller
     {
         $styleKey = strtolower((string) ($stylePreference ?? ''));
         if ($styleKey === '') {
+            $styleKey = 'formal';
+        }
+
+        $morphotype = $this->resolveMorphotypeKey($bodyType);
+        $items = $this->resolveRecommendationItemsFromDatabase($morphotype, $styleKey);
+
+        if ($items->isEmpty()) {
             return null;
         }
 
-        $bodyKey = $this->mapBodyTypeToProductKey($bodyType);
-        $productCatalog = $this->productRecommendationCatalog();
-        $tipsCatalog = $this->stylingTipsCatalog();
-
-        $products = $productCatalog[$bodyKey][$styleKey]
-            ?? $productCatalog[$bodyKey]['formal']
-            ?? $productCatalog['hourglass'][$styleKey]
-            ?? $productCatalog['hourglass']['formal']
-            ?? [];
-
-        if (empty($products)) {
-            return null;
-        }
+        $products = $items
+            ->map(fn (FashionItem $item): array => $this->mapFashionItemToSystemProduct($item))
+            ->values()
+            ->all();
 
         return [
             'main_product' => $products[0],
             'other_products' => array_slice($products, 1),
-            'tips' => $tipsCatalog[$bodyKey] ?? ($tipsCatalog['hourglass'] ?? []),
+            'tips' => $this->buildSystemRecommendationTips($morphotype),
             'style_key' => $styleKey,
-            'body_key' => $bodyKey,
+            'body_key' => $morphotype,
         ];
     }
 
-    private function mapBodyTypeToProductKey(string $bodyType): string
+    private function resolveRecommendationItemsFromDatabase(string $morphotype, string $styleKey): Collection
     {
-        return match ($this->resolveMorphotypeKey($bodyType)) {
-            'hourglass' => 'hourglass',
-            'spoon', 'triangle' => 'pear',
-            'y_shape', 'inverted_triangle', 'inverted_u' => 'inverted_triangle',
-            'rectangle', 'u', 'diamond' => 'rectangle',
-            default => 'hourglass',
+        $items = $this->queryRecommendationItemsByMorphotypes([$morphotype], $morphotype, $styleKey);
+
+        if ($items->isEmpty()) {
+            $items = $this->queryRecommendationItemsByMorphotypes($this->fallbackMorphotypes($morphotype), $morphotype, $styleKey);
+        }
+
+        if ($items->isEmpty()) {
+            $items = FashionItem::query()
+                ->with([
+                    'stores' => fn ($query) => $query->ordered(),
+                ])
+                ->active()
+                ->orderByRaw('CASE WHEN style_preference = ? THEN 0 WHEN style_preference IS NULL THEN 1 ELSE 2 END', [$styleKey])
+                ->ordered()
+                ->limit(12)
+                ->get();
+        }
+
+        return $items;
+    }
+
+    private function queryRecommendationItemsByMorphotypes(array $morphotypes, string $primaryMorphotype, string $styleKey): Collection
+    {
+        $sanitizedMorphotypes = array_values(array_unique(array_filter($morphotypes, fn ($value) => filled($value))));
+
+        if (empty($sanitizedMorphotypes)) {
+            return collect();
+        }
+
+        return FashionItem::query()
+            ->with([
+                'stores' => fn ($query) => $query->ordered(),
+            ])
+            ->active()
+            ->whereIn('body_type', $sanitizedMorphotypes)
+            ->orderByRaw('CASE WHEN body_type = ? THEN 0 ELSE 1 END', [$primaryMorphotype])
+            ->orderByRaw('CASE WHEN style_preference = ? THEN 0 WHEN style_preference IS NULL THEN 1 ELSE 2 END', [$styleKey])
+            ->ordered()
+            ->limit(12)
+            ->get();
+    }
+
+    private function fallbackMorphotypes(string $morphotype): array
+    {
+        return match ($morphotype) {
+            'spoon', 'triangle' => ['spoon', 'triangle', 'hourglass'],
+            'y_shape', 'inverted_triangle', 'inverted_u' => ['y_shape', 'inverted_triangle', 'inverted_u', 'hourglass'],
+            'rectangle', 'u', 'diamond' => ['rectangle', 'u', 'diamond', 'hourglass'],
+            'hourglass' => ['hourglass', 'rectangle'],
+            default => ['hourglass', 'rectangle', 'spoon', 'y_shape'],
         };
     }
 
-    private function productRecommendationCatalog(): array
+    private function mapFashionItemToSystemProduct(FashionItem $item): array
     {
+        $stores = $item->stores
+            ->map(fn (FashionItemStore $store): array => [
+                'name' => $store->store_name,
+                'link' => $store->store_link,
+            ])
+            ->values()
+            ->all();
+
+        if (empty($stores) && filled($item->purchase_link)) {
+            $stores[] = [
+                'name' => 'Store Link',
+                'link' => $item->purchase_link,
+            ];
+        }
+
+        $primaryStore = $stores[0] ?? null;
+
         return [
-            'hourglass' => [
-                'formal' => [
-                    [
-                        'name' => 'Elegant Belted Blazer Dress',
-                        'description' => 'A sophisticated blazer dress with a belt to accentuate your natural waist.',
-                        'main_image' => 'images/hourglass/formal/H_formal1.jpg',
-                        'detail_images' => ['images/hourglass/formal/H_formal1.jpg'],
-                        'price' => '$89.99',
-                        'shop' => 'ZARA',
-                        'shop_url' => 'https://www.zara.com/',
-                    ],
-                    [
-                        'name' => 'Wrap Midi Dress',
-                        'description' => 'Flattering wrap dress that hugs your curves in all the right places.',
-                        'main_image' => 'images/hourglass/formal/H_formal2.jpg',
-                        'detail_images' => ['images/hourglass/formal/H_formal2.jpg'],
-                        'price' => '$75.00',
-                        'shop' => 'MANGO',
-                        'shop_url' => 'https://shop.mango.com/',
-                    ],
-                ],
-                'casual' => [
-                    [
-                        'name' => 'Fitted Ribbed T-Shirt',
-                        'description' => 'Comfortable fitted t-shirt that follows your natural curves.',
-                        'main_image' => 'images/hourglass/casual/H_casual1.jpg',
-                        'detail_images' => ['images/hourglass/casual/H_casual1.jpg'],
-                        'price' => '$24.99',
-                        'shop' => 'H&M',
-                        'shop_url' => 'https://www2.hm.com/',
-                    ],
-                    [
-                        'name' => 'Soft Waist-Shape Cardigan',
-                        'description' => 'Layering cardigan that keeps your waistline defined for daily wear.',
-                        'main_image' => 'images/hourglass/casual/H_casual2.jpg',
-                        'detail_images' => ['images/hourglass/casual/H_casual2.jpg'],
-                        'price' => '$39.99',
-                        'shop' => 'UNIQLO',
-                        'shop_url' => 'https://www.uniqlo.com/',
-                    ],
-                ],
-            ],
-            'pear' => [
-                'formal' => [
-                    [
-                        'name' => 'A-Line Midi Dress',
-                        'description' => 'Flattering A-line dress that skims over hips with elegant balance.',
-                        'main_image' => 'images/pear/formal/P_formal1.jpg',
-                        'detail_images' => ['images/pear/formal/P_formal1.jpg'],
-                        'price' => '$79.99',
-                        'shop' => 'MANGO',
-                        'shop_url' => 'https://shop.mango.com/',
-                    ],
-                ],
-                'casual' => [
-                    [
-                        'name' => 'Boat Neck Casual Top',
-                        'description' => 'Adds visual width to upper body while staying relaxed and easy.',
-                        'main_image' => 'images/pear/casual/P_casual1.jpg',
-                        'detail_images' => ['images/pear/casual/P_casual1.jpg'],
-                        'price' => '$29.99',
-                        'shop' => 'H&M',
-                        'shop_url' => 'https://www2.hm.com/',
-                    ],
-                ],
-            ],
-            'rectangle' => [
-                'formal' => [
-                    [
-                        'name' => 'Peplum Top with Belt',
-                        'description' => 'Creates the illusion of curves with peplum detail and waist focus.',
-                        'main_image' => 'images/rectangle/formal/R_formal1.jpg',
-                        'detail_images' => ['images/rectangle/formal/R_formal1.jpg'],
-                        'price' => '$59.99',
-                        'shop' => 'H&M',
-                        'shop_url' => 'https://www2.hm.com/',
-                    ],
-                ],
-                'casual' => [
-                    [
-                        'name' => 'Layered Knit Set',
-                        'description' => 'Casual layering pieces to add contour and shape naturally.',
-                        'main_image' => 'images/rectangle/casual/R_casual1.jpg',
-                        'detail_images' => ['images/rectangle/casual/R_casual1.jpg'],
-                        'price' => '$44.99',
-                        'shop' => 'UNIQLO',
-                        'shop_url' => 'https://www.uniqlo.com/',
-                    ],
-                ],
-            ],
-            'inverted_triangle' => [
-                'formal' => [
-                    [
-                        'name' => 'V-Neck Blazer',
-                        'description' => 'Deep V-neckline balances broad shoulders with polished structure.',
-                        'main_image' => 'images/inverted_triangle/formal/IT_formal1.jpg',
-                        'detail_images' => ['images/inverted_triangle/formal/IT_formal1.jpg'],
-                        'price' => '$89.99',
-                        'shop' => 'Banana Republic',
-                        'shop_url' => 'https://bananarepublic.gap.com/',
-                    ],
-                ],
-                'casual' => [
-                    [
-                        'name' => 'Soft V-Neck Everyday Top',
-                        'description' => 'Simple casual top that softens upper lines and keeps proportions balanced.',
-                        'main_image' => 'images/inverted_triangle/casual/IT_casual1.jpg',
-                        'detail_images' => ['images/inverted_triangle/casual/IT_casual1.jpg'],
-                        'price' => '$34.99',
-                        'shop' => 'ZARA',
-                        'shop_url' => 'https://www.zara.com/',
-                    ],
-                ],
-            ],
+            'id' => $item->id,
+            'name' => $item->title,
+            'description' => (string) ($item->description ?? ''),
+            'main_image' => $item->display_image_url,
+            'detail_images' => [$item->display_image_url],
+            'price' => null,
+            'shop' => $primaryStore['name'] ?? 'Marketplace',
+            'shop_url' => $primaryStore['link'] ?? $item->purchase_link,
+            'stores' => $stores,
         ];
     }
 
-    private function stylingTipsCatalog(): array
+    private function buildSystemRecommendationTips(string $morphotype): array
     {
-        return [
-            'hourglass' => [
-                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Highlight your waist with belted styles and fitted silhouettes.'],
-                ['icon' => 'fa-solid fa-arrow-up', 'text' => 'Choose V-necklines to elongate your upper body balance.'],
-                ['icon' => 'fa-solid fa-heart', 'text' => 'Wrap dresses and peplum tops are strong everyday options.'],
-            ],
-            'pear' => [
-                ['icon' => 'fa-solid fa-arrow-up', 'text' => 'Draw attention upward with statement necklines and shoulder details.'],
-                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Use A-line bottoms to smooth lower-body proportions.'],
-                ['icon' => 'fa-solid fa-circle', 'text' => 'Keep bottom colors darker for cleaner visual balance.'],
-            ],
-            'rectangle' => [
-                ['icon' => 'fa-solid fa-link', 'text' => 'Create curves with belts and strategic layering.'],
-                ['icon' => 'fa-solid fa-circle', 'text' => 'Add soft volume around bust and hip areas.'],
-                ['icon' => 'fa-solid fa-bolt', 'text' => 'Use waist-focused cuts to break straight vertical lines.'],
-            ],
-            'inverted_triangle' => [
-                ['icon' => 'fa-solid fa-arrow-down', 'text' => 'Balance upper width by adding texture on bottom pieces.'],
-                ['icon' => 'fa-solid fa-tshirt', 'text' => 'Prefer softer shoulder construction with V-neck profiles.'],
-                ['icon' => 'fa-solid fa-layer-group', 'text' => 'Choose clean upper layers and expressive lower silhouettes.'],
-            ],
-        ];
+        $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
+        $recommendationData = $recommendationPayload['recommendations'] ?? [];
+
+        $tips = [];
+        $styleTip = (string) session('style_tip', '');
+
+        if ($styleTip !== '') {
+            $tips[] = [
+                'icon' => 'fa-solid fa-wand-magic-sparkles',
+                'text' => $styleTip,
+            ];
+        }
+
+        $focus = (string) ($recommendationData['focus'] ?? '');
+        if ($focus !== '') {
+            $tips[] = [
+                'icon' => 'fa-solid fa-bullseye',
+                'text' => $focus,
+            ];
+        }
+
+        foreach (array_slice($recommendationData['tops'] ?? [], 0, 2) as $topTip) {
+            $tips[] = [
+                'icon' => 'fa-solid fa-shirt',
+                'text' => $topTip,
+            ];
+        }
+
+        foreach (array_slice($recommendationData['bottoms'] ?? [], 0, 2) as $bottomTip) {
+            $tips[] = [
+                'icon' => 'fa-solid fa-shoe-prints',
+                'text' => $bottomTip,
+            ];
+        }
+
+        if (empty($tips)) {
+            $tips[] = [
+                'icon' => 'fa-solid fa-lightbulb',
+                'text' => 'Choose pieces that keep your silhouette balanced and comfortable.',
+            ];
+        }
+
+        return array_values(array_slice($tips, 0, 4));
     }
 
     private function buildBodyVisual(?float $bust, ?float $waist, ?float $hip, string $bodyType): array

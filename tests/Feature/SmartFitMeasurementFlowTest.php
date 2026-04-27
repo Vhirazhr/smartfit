@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\FashionCategory;
+use App\Models\FashionItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -74,6 +76,27 @@ class SmartFitMeasurementFlowTest extends TestCase
 
     public function test_recommendation_page_shows_personalized_recommendation_showcase_when_style_is_selected(): void
     {
+        $category = FashionCategory::query()->create([
+            'name' => 'Casual',
+            'slug' => 'casual',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
+        FashionItem::query()->create([
+            'fashion_category_id' => $category->id,
+            'title' => 'Database Casual Hourglass Look',
+            'description' => 'Recommendation source from database record.',
+            'body_type' => 'hourglass',
+            'style_preference' => 'casual',
+            'color_tone' => 'light',
+            'image_source' => 'url',
+            'image_url' => 'https://example.com/hourglass-look.jpg',
+            'purchase_link' => 'https://example.com/hourglass-buy',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
         $response = $this
             ->withSession([
                 'body_type' => 'Hourglass',
@@ -90,7 +113,7 @@ class SmartFitMeasurementFlowTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('Your Personalized Recommendations')
-            ->assertSee('Fitted Ribbed T-Shirt')
+            ->assertSee('Database Casual Hourglass Look')
             ->assertSee('Styling Tips for Hourglass');
     }
 }
