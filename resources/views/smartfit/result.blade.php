@@ -33,25 +33,25 @@
 			<p>{{ $description }}</p>
 			<div class="meta-row">
 				@if($measurementId)
-					<span><i class="fa-regular fa-hashtag"></i>Record #{{ $measurementId }}</span>
+					<span><i class="fa-solid fa-hashtag"></i>Record #{{ $measurementId }}</span>
 				@endif
 				@if($measurementStandard)
-					<span><i class="fa-regular fa-square-check"></i>{{ $measurementStandard }}</span>
+					<span><i class="fa-solid fa-square-check"></i>{{ $measurementStandard }}</span>
 				@endif
-				<span><i class="fa-regular fa-database"></i>Source: {{ ucfirst($source) }}</span>
+				<span><i class="fa-solid fa-database"></i>Source: {{ ucfirst($source) }}</span>
 			</div>
 		</div>
 
 		@if(session('csrf_expired'))
 			<div class="session-expired-banner reveal-item" role="alert">
-				<i class="fa-regular fa-clock"></i>
+				<i class="fa-solid fa-clock"></i>
 				<span>{{ session('csrf_expired') }}</span>
 			</div>
 		@endif
 
 		@if(session('recommendation_missing'))
 			<div class="session-expired-banner reveal-item" role="alert">
-				<i class="fa-regular fa-circle-info"></i>
+				<i class="fa-solid fa-circle-info"></i>
 				<span>{{ session('recommendation_missing') }}</span>
 			</div>
 		@endif
@@ -209,18 +209,18 @@
 				@endif
 
 				@if($styleTip)
-					<p class="tip-line"><i class="fa-regular fa-shirt"></i>{{ $styleTip }}</p>
+					<p class="tip-line"><i class="fa-solid fa-tshirt"></i>{{ $styleTip }}</p>
 				@endif
 
 				@if($colorTip)
-					<p class="tip-line"><i class="fa-regular fa-palette"></i>{{ $colorTip }}</p>
+					<p class="tip-line"><i class="fa-solid fa-palette"></i>{{ $colorTip }}</p>
 				@endif
 
 				@php
 					$stylePreferenceCards = [
 						[
 							'name' => 'Casual',
-							'icon' => 'fa-solid fa-shirt',
+							'icon' => 'fa-solid fa-tshirt',
 							'description' => 'Relaxed, simple, and comfortable for everyday wear.',
 							'example' => 'T-shirt - Jeans - Sneakers',
 						],
@@ -261,7 +261,7 @@
 						</div>
 					</div>
 
-					<form action="{{ route('smartfit.get.recommendation') }}" method="POST" class="style-preference-form">
+					<form id="stylePreferenceForm" action="{{ route('smartfit.get.recommendation') }}" method="POST" class="style-preference-form">
 						@csrf
 						<div class="style-preference-grid">
 							@foreach($stylePreferenceCards as $styleCard)
@@ -301,15 +301,10 @@
 			<a href="{{ route('smartfit.input') }}" class="btn-secondary">
 				<i class="fa-solid fa-rotate-right"></i> Re-measure
 			</a>
-			@if($stylePreference)
-				<a href="{{ route('smartfit.recommendation') }}" class="btn-primary">
-					See your recommendation <i class="fa-solid fa-arrow-right"></i>
-				</a>
-			@else
-				<a href="#style-preference-panel" class="btn-primary">
-					Select style first <i class="fa-solid fa-arrow-right"></i>
-				</a>
-			@endif
+			<button type="button" class="btn-primary btn-recommendation-submit" id="submitRecommendationFromFooter">
+				<span id="submitRecommendationLabel">Select style first</span>
+				<i class="fa-solid fa-arrow-right"></i>
+			</button>
 		</div>
 	</div>
 </section>
@@ -317,4 +312,44 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/smartfit-result.css') }}">
+@endpush
+
+@push('scripts')
+<script>
+	(() => {
+		const form = document.getElementById('stylePreferenceForm');
+		const submitButton = document.getElementById('submitRecommendationFromFooter');
+		const submitLabel = document.getElementById('submitRecommendationLabel');
+		const panel = document.getElementById('style-preference-panel');
+
+		if (!form || !submitButton || !submitLabel || !panel) {
+			return;
+		}
+
+		const radios = Array.from(form.querySelectorAll('input[name="style_preference"]'));
+
+		const hasSelection = () => radios.some((radio) => radio.checked);
+
+		const refreshSubmitLabel = () => {
+			submitLabel.textContent = hasSelection() ? 'Get recommendation' : 'Select style first';
+		};
+
+		radios.forEach((radio) => {
+			radio.addEventListener('change', refreshSubmitLabel);
+		});
+
+		submitButton.addEventListener('click', () => {
+			if (!hasSelection()) {
+				panel.classList.add('style-selection-needed');
+				panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				setTimeout(() => panel.classList.remove('style-selection-needed'), 1200);
+				return;
+			}
+
+			form.requestSubmit();
+		});
+
+		refreshSubmitLabel();
+	})();
+</script>
 @endpush
