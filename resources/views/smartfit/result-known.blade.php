@@ -83,149 +83,15 @@
 @endpush
 
 @push('scripts')
+<script id="knownRecommendedItemsData" type="application/json">{!! json_encode($recommendedItems ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+<script id="knownStylingTipsData" type="application/json">{!! json_encode($stylingTips ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
 <script>
-// ==================== DATA DUMMY PRODUCTS ====================
-const productsDatabase = {
-    hourglass: {
-        formal: [
-            {
-                id: 1,
-                name: "Elegant Belted Blazer Dress",
-                description: "A sophisticated blazer dress with a belt to accentuate your natural waist. Perfect for office meetings and formal events.",
-                main_image: "images/hourglass/formal/H_formal1.jpg",
-                detail_images: [
-                    "images/hourglass/formal/H_formal1.jpg",
-                    "images/hourglass/formal/H_formal1.jpg",
-                    "images/hourglass/formal/H_formal1.jpg",
-                    "images/hourglass/formal/H_formal1.jpg"
-                ],
-                price: 89.99,
-                shop: "ZARA",
-                shopUrl: "https://www.zara.com/"
-            },
-            {
-                id: 2,
-                name: "Wrap Midi Dress",
-                description: "Flattering wrap dress that hugs your curves in all the right places.",
-                main_image: "images/hourglass/formal/H_formal2.jpg",
-                detail_images: ["images/hourglass/formal/H_formal2.jpg"],
-                price: 75.00,
-                shop: "MANGO",
-                shopUrl: "https://shop.mango.com/"
-            },
-            {
-                id: 3,
-                name: "Pencil Skirt Suit Set",
-                description: "Classic two-piece suit with a fitted pencil skirt and tailored blazer.",
-                main_image: "images/hourglass/formal/H_formal3.jpg",
-                detail_images: ["images/hourglass/formal/H_formal3.jpg"],
-                price: 149.99,
-                shop: "H&M",
-                shopUrl: "https://www2.hm.com/"
-            }
-        ],
-        casual: [
-            {
-                id: 4,
-                name: "Fitted Ribbed T-Shirt",
-                description: "Comfortable fitted t-shirt that follows your natural curves.",
-                main_image: "images/hourglass/casual/H_casual1.jpg",
-                detail_images: ["images/hourglass/casual/H_casual1.jpg"],
-                price: 24.99,
-                shop: "H&M",
-                shopUrl: "https://www2.hm.com/"
-            }
-        ]
-    },
-    pear: {
-        formal: [
-            {
-                id: 5,
-                name: "A-Line Midi Dress",
-                description: "Flattering A-line dress that skims over hips.",
-                main_image: "images/pear/formal/P_formal1.jpg",
-                detail_images: ["images/pear/formal/P_formal1.jpg"],
-                price: 79.99,
-                shop: "MANGO",
-                shopUrl: "https://shop.mango.com/"
-            }
-        ]
-    },
-    rectangle: {
-        formal: [
-            {
-                id: 6,
-                name: "Peplum Top with Belt",
-                description: "Creates the illusion of curves with peplum detail.",
-                main_image: "images/rectangle/formal/R_formal1.jpg",
-                detail_images: ["images/rectangle/formal/R_formal1.jpg"],
-                price: 59.99,
-                shop: "H&M",
-                shopUrl: "https://www2.hm.com/"
-            }
-        ]
-    },
-    inverted_triangle: {
-        formal: [
-            {
-                id: 7,
-                name: "V-Neck Blazer",
-                description: "Deep V-neckline balances broad shoulders.",
-                main_image: "images/inverted_triangle/formal/IT_formal1.jpg",
-                detail_images: ["images/inverted_triangle/formal/IT_formal1.jpg"],
-                price: 89.99,
-                shop: "Banana Republic",
-                shopUrl: "https://bananarepublic.gap.com/"
-            }
-        ]
-    }
-};
-
-// Styling Tips
-const stylingTips = {
-    hourglass: [
-        { icon: "fas fa-tshirt", tip: "Highlight your waist with belted styles and fitted silhouettes" },
-        { icon: "fas fa-arrow-up", tip: "Choose V-necklines to elongate your torso" },
-        { icon: "fas fa-heart", tip: "Wrap dresses and peplum tops are your best friends" }
-    ],
-    pear: [
-        { icon: "fas fa-arrow-up", tip: "Draw attention to your upper body with statement tops" },
-        { icon: "fas fa-tshirt", tip: "A-line skirts and wide-leg pants flatter your shape" }
-    ],
-    rectangle: [
-        { icon: "fas fa-belt", tip: "Create curves with belted styles and peplum details" },
-        { icon: "fas fa-circle", tip: "Add volume with ruffles and layered pieces" }
-    ],
-    inverted_triangle: [
-        { icon: "fas fa-arrow-down", tip: "Balance broad shoulders with A-line skirts" },
-        { icon: "fas fa-tshirt", tip: "Raglan sleeves and deep V-necks soften the upper body" }
-    ]
-};
-
-// Get data dari session
-let currentBodyType = "{{ session('morphotype', 'hourglass') }}";
-let currentStyle = "{{ strtolower(session('style_preference', 'Formal')) }}";
+const recommendedItems = JSON.parse(document.getElementById('knownRecommendedItemsData').textContent || '[]');
+const stylingTips = JSON.parse(document.getElementById('knownStylingTipsData').textContent || '[]');
 let currentProductIndex = 0;
 
-function getProductKey(bodyType) {
-    const key = String(bodyType || '').toLowerCase();
-
-    if (key === 'hourglass') return 'hourglass';
-    if (key === 'spoon' || key === 'triangle') return 'pear';
-    if (key === 'y_shape' || key === 'inverted_triangle' || key === 'inverted_u') return 'inverted_triangle';
-    if (key === 'rectangle' || key === 'u' || key === 'diamond') return 'rectangle';
-
-    return 'hourglass';
-}
-
 function getProducts() {
-    const bodyKey = getProductKey(currentBodyType);
-
-    if (productsDatabase[bodyKey] && productsDatabase[bodyKey][currentStyle]) {
-        return productsDatabase[bodyKey][currentStyle];
-    }
-
-    return [];
+    return Array.isArray(recommendedItems) ? recommendedItems : [];
 }
 
 function renderMainProduct() {
@@ -238,30 +104,46 @@ function renderMainProduct() {
     }
     
     const product = products[currentProductIndex];
+    const detailImages = Array.isArray(product.detail_images) && product.detail_images.length > 0
+        ? product.detail_images
+        : [product.main_image];
+    const hasShopLink = Boolean(product.shopUrl);
+    const storeList = Array.isArray(product.stores)
+        ? product.stores.map((store) => store.name).filter(Boolean).join(', ')
+        : '';
+    const priceMarkup = product.price !== undefined && product.price !== null
+        ? `<div class="product-detail-price">$${Number(product.price).toFixed(2)}</div>`
+        : '';
+    const buttonMarkup = hasShopLink
+        ? `<a href="${product.shopUrl}" target="_blank" rel="noopener" class="product-detail-btn">Shop Now <i class="fas fa-arrow-right"></i></a>`
+        : '<span class="product-detail-btn" style="opacity:.6; pointer-events:none;">Store Link Unavailable</span>';
     
     container.innerHTML = `
         <div class="product-detail">
             <div class="product-detail-image">
-                <img id="mainProductImage" src="{{ asset('') }}${product.main_image}" 
+                <img id="mainProductImage" src="${product.main_image}" 
                      alt="${product.name}"
                      onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=Image+Not+Found'">
             </div>
             <div class="product-detail-info">
-                <div class="product-detail-shop"><i class="fas fa-store"></i><span>${product.shop}</span></div>
+                <div class="product-detail-shop"><i class="fas fa-store"></i><span>${product.shop}${storeList ? ` • ${storeList}` : ''}</span></div>
                 <h2 class="product-detail-name">${product.name}</h2>
                 <p class="product-detail-description">${product.description}</p>
-                <div class="product-detail-price">$${product.price}</div>
+                ${priceMarkup}
                 <div class="product-detail-images">
                     <span class="detail-label">DETAIL IMAGES</span>
                     <div class="detail-thumbnails">
-                        ${product.detail_images.map((img, idx) => `
-                            <div class="detail-thumb ${idx === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', this)">
-                                <img src="{{ asset('') }}${img}" alt="Detail ${idx + 1}">
-                            </div>
-                        `).join('')}
+                        ${detailImages.map((img, idx) => {
+                            const safeImg = String(img).replace(/'/g, "\\'");
+                            return `
+                                <div class="detail-thumb ${idx === 0 ? 'active' : ''}" onclick="changeMainImage('${safeImg}', this)">
+                                    <img src="${img}" alt="Detail ${idx + 1}">
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
-                <a href="${product.shopUrl}" target="_blank" class="product-detail-btn">Shop Now <i class="fas fa-arrow-right"></i></a>
+                ${buttonMarkup}
             </div>
         </div>
     `;
@@ -269,7 +151,7 @@ function renderMainProduct() {
 
 function changeMainImage(imageUrl, element) {
     const mainImage = document.getElementById('mainProductImage');
-    if (mainImage) mainImage.src = "{{ asset('') }}" + imageUrl;
+    if (mainImage) mainImage.src = imageUrl;
     document.querySelectorAll('.detail-thumb').forEach(thumb => thumb.classList.remove('active'));
     element.classList.add('active');
 }
@@ -286,8 +168,12 @@ function renderAlsoLike() {
     
     container.innerHTML = otherProducts.map(product => `
         <div class="also-like-card" onclick="selectProduct(${product.id})">
-            <div class="also-like-image"><img src="{{ asset('') }}${product.main_image}" alt="${product.name}"></div>
-            <div class="also-like-info"><h4>${product.name}</h4><p>$${product.price}</p><span class="also-like-shop">${product.shop}</span></div>
+            <div class="also-like-image"><img src="${product.main_image}" alt="${product.name}" onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=Image+Not+Found'"></div>
+            <div class="also-like-info">
+                <h4>${product.name}</h4>
+                ${product.price !== undefined && product.price !== null ? `<p>$${Number(product.price).toFixed(2)}</p>` : ''}
+                <span class="also-like-shop">${product.shop || 'Marketplace'}</span>
+            </div>
         </div>
     `).join('');
 }
@@ -305,8 +191,14 @@ function selectProduct(productId) {
 
 function renderTips() {
     const tipsGrid = document.getElementById('tipsGrid');
-    const tips = stylingTips[getProductKey(currentBodyType)] || stylingTips.hourglass;
-    tipsGrid.innerHTML = tips.map(tip => `<div class="tip-card"><i class="${tip.icon}"></i><p>${tip.tip}</p></div>`).join('');
+    const tips = Array.isArray(stylingTips) ? stylingTips : [];
+
+    if (tips.length === 0) {
+        tipsGrid.innerHTML = '<div class="tip-card"><i class="fas fa-lightbulb"></i><p>Styling tips will appear once recommendations are available.</p></div>';
+        return;
+    }
+
+    tipsGrid.innerHTML = tips.map((tip) => `<div class="tip-card"><i class="${tip.icon}"></i><p>${tip.tip}</p></div>`).join('');
 }
 
 renderMainProduct();
