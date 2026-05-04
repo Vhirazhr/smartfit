@@ -3,98 +3,213 @@
 @section('title', 'SMARTfit - Fashion Items')
 
 @section('content')
-<div class="container" style="max-width: 1280px; margin: 36px auto; padding: 0 16px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px;">
-        <div>
-            <h2 style="margin:0;">Fashion Items</h2>
-            <p style="margin:6px 0 0; color:#666;">Manage gallery items, body types, image source, and purchase links.</p>
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <h2>SMARTfit</h2>
+            <span>Admin Panel</span>
         </div>
-        <div style="display:flex; gap:8px;">
-            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-            <a href="{{ route('admin.fashion-categories.index') }}">Categories</a>
-            <a href="{{ route('admin.fashion-items.create') }}">+ Add Item</a>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Menu Utama</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="fas fa-chart-pie"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Manajemen Data</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('admin.fashion-categories.index') }}">
+                            <i class="fas fa-tags"></i>
+                            Kategori
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.fashion-items.index') }}" class="active">
+                            <i class="fas fa-tshirt"></i>
+                            Semua Fashion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="top-bar-text">
+                    <h1>Fashion Items</h1>
+                    <p>Manage gallery items, body types, image source, and purchase links.</p>
+                </div>
+            </div>
+
+            <form action="{{ route('admin.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
-    </div>
 
-    @if(session('success'))
-        <div style="padding:10px 12px; background:#e8f8ef; color:#1f7a4c; border-radius:8px; margin-bottom:12px;">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div style="padding:10px 12px; background:#fdecec; color:#8a2f2f; border-radius:8px; margin-bottom:12px;">{{ session('error') }}</div>
-    @endif
+        <div class="content-area">
+            <div class="category-header">
+                <div class="category-title">
+                    <h1>All Fashion Items</h1>
+                    <p>Kelola semua item fashion yang tersimpan.</p>
+                </div>
 
-    <form method="GET" action="{{ route('admin.fashion-items.index') }}" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-        <input type="text" name="keyword" value="{{ $filters['keyword'] ?? '' }}" placeholder="Search title" style="padding:8px 10px; min-width:220px;">
-        <select name="category_id" style="padding:8px 10px; min-width:180px;">
-            <option value="">All categories</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->id }}" @selected((string)($filters['category_id'] ?? '') === (string)$category->id)>{{ $category->name }}</option>
-            @endforeach
-        </select>
-        <select name="body_type" style="padding:8px 10px; min-width:180px;">
-            <option value="">All body types</option>
-            @foreach($bodyTypes as $type)
-                <option value="{{ $type }}" @selected(($filters['body_type'] ?? '') === $type)>{{ $labels[$type] ?? $type }}</option>
-            @endforeach
-        </select>
-        <select name="is_active" style="padding:8px 10px;">
-            <option value="">All status</option>
-            <option value="1" @selected(($filters['is_active'] ?? '') === '1')>Active</option>
-            <option value="0" @selected(($filters['is_active'] ?? '') === '0')>Inactive</option>
-        </select>
-        <button type="submit" style="padding:8px 12px;">Filter</button>
-    </form>
+                <div class="category-actions">
+                    <a href="{{ route('admin.fashion-items.create') }}">+ Add Item</a>
+                </div>
+            </div>
 
-    <div style="overflow:auto; background:#fff; border:1px solid #eee; border-radius:10px;">
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:#f9f9f9;">
-                    <th style="text-align:left; padding:10px;">Image</th>
-                    <th style="text-align:left; padding:10px;">Title</th>
-                    <th style="text-align:left; padding:10px;">Category</th>
-                    <th style="text-align:left; padding:10px;">Body Type</th>
-                    <th style="text-align:left; padding:10px;">Source</th>
-                    <th style="text-align:left; padding:10px;">Status</th>
-                    <th style="text-align:left; padding:10px;">Sort</th>
-                    <th style="text-align:left; padding:10px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($items as $item)
-                    <tr>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">
-                            <img src="{{ $item->display_image_url }}" alt="{{ $item->title }}" style="width:56px; height:56px; object-fit:cover; border-radius:8px;">
-                        </td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">
-                            <div>{{ $item->title }}</div>
-                            @if($item->purchase_link)
-                                <a href="{{ $item->purchase_link }}" target="_blank" rel="noopener" style="font-size:12px;">Purchase link</a>
-                            @endif
-                        </td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">{{ $item->category?->name ?? '-' }}</td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">{{ $labels[$item->body_type] ?? $item->body_type }}</td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1; text-transform:capitalize;">{{ $item->image_source }}</td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">{{ $item->is_active ? 'Active' : 'Inactive' }}</td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1;">{{ $item->sort_order }}</td>
-                        <td style="padding:10px; border-top:1px solid #f1f1f1; display:flex; gap:8px;">
-                            <a href="{{ route('admin.fashion-items.edit', $item->id) }}">Edit</a>
-                            <form method="POST" action="{{ route('admin.fashion-items.delete', $item->id) }}" onsubmit="return confirm('Delete this item?');">
-                                @csrf
-                                <button type="submit" style="background:none; border:none; color:#b33434; cursor:pointer; padding:0;">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" style="padding:16px; text-align:center; color:#777;">No fashion items found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+            @if(session('success'))
+                <div class="alert-box alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    {{ session('success') }}
+                </div>
+            @endif
 
-    <div style="margin-top:14px;">
-        {{ $items->links() }}
-    </div>
+            @if(session('error'))
+                <div class="alert-box alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <form method="GET" action="{{ route('admin.fashion-items.index') }}" class="category-filter fashion-items-filter">
+                <input type="text" name="keyword" value="{{ $filters['keyword'] ?? '' }}" placeholder="Search title">
+
+                <select name="category_id">
+                    <option value="">All categories</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" @selected((string)($filters['category_id'] ?? '') === (string)$category->id)>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="body_type">
+                    <option value="">All body types</option>
+                    @foreach($bodyTypes as $type)
+                        <option value="{{ $type }}" @selected(($filters['body_type'] ?? '') === $type)>
+                            {{ $labels[$type] ?? $type }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="is_active">
+                    <option value="">All status</option>
+                    <option value="1" @selected(($filters['is_active'] ?? '') === '1')>Active</option>
+                    <option value="0" @selected(($filters['is_active'] ?? '') === '0')>Inactive</option>
+                </select>
+
+                <button type="submit">
+                    <i class="fas fa-filter"></i>
+                    Filter
+                </button>
+            </form>
+
+            <div class="category-table-card">
+                <table class="category-table fashion-items-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Body Type</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Sort</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($items as $item)
+                            <tr>
+                                <td>
+                                    <img class="fashion-item-thumb" src="{{ $item->display_image_url }}" alt="{{ $item->title }}">
+                                </td>
+
+                                <td>
+                                    <strong>{{ $item->title }}</strong>
+
+                                    @if($item->purchase_link)
+                                        <div>
+                                            <a href="{{ $item->purchase_link }}" target="_blank" rel="noopener" class="purchase-link">
+                                                Purchase link
+                                            </a>
+                                        </div>
+                                    @endif
+                                </td>
+
+                                <td>{{ $item->category?->name ?? '-' }}</td>
+
+                                <td>
+                                    <span class="mini-badge">
+                                        {{ $labels[$item->body_type] ?? $item->body_type }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="mini-badge neutral">
+                                        {{ ucfirst($item->image_source) }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="category-status {{ $item->is_active ? 'active' : 'inactive' }}">
+                                        {{ $item->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </td>
+
+                                <td>{{ $item->sort_order }}</td>
+
+                                <td>
+                                    <div class="category-row-actions">
+                                        <a href="{{ route('admin.fashion-items.edit', $item->id) }}" class="category-action-link edit">
+                                            Edit
+                                        </a>
+
+                                        <form method="POST" action="{{ route('admin.fashion-items.delete', $item->id) }}" onsubmit="return confirm('Delete this item?');">
+                                            @csrf
+                                            <button type="submit" class="category-action-link delete">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="category-empty">
+                                    No fashion items found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="category-pagination">
+                {{ $items->links() }}
+            </div>
+        </div>
+    </main>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin-dashboard.css') }}">
+@endpush
