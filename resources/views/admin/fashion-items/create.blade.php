@@ -3,106 +3,213 @@
 @section('title', 'SMARTfit - Create Fashion Item')
 
 @section('content')
-<div class="container" style="max-width: 880px; margin: 36px auto; padding: 0 16px;">
-    <h2 style="margin-bottom: 12px;">Create Fashion Item</h2>
-    <p style="margin-top:0; color:#666;">Add a new item for dynamic gallery recommendation.</p>
-
-    @if($errors->any())
-        <div style="padding:10px 12px; background:#fdecec; color:#8a2f2f; border-radius:8px; margin-bottom:12px;">
-            <ul style="margin:0; padding-left:18px;">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+<div class="admin-wrapper">
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <h2>SMARTfit</h2>
+            <span>Admin Panel</span>
         </div>
-    @endif
 
-    <form method="POST" action="{{ route('admin.fashion-items.store') }}" enctype="multipart/form-data" style="background:#fff; border:1px solid #eee; border-radius:10px; padding:16px;">
-        @csrf
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div>
-                <label for="fashion_category_id">Category *</label><br>
-                <select id="fashion_category_id" name="fashion_category_id" required style="width:100%; padding:8px;">
-                    <option value="">Select category</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" @selected(old('fashion_category_id') == $category->id)>{{ $category->name }}</option>
-                    @endforeach
-                </select>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Menu Utama</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="fas fa-chart-pie"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
             </div>
 
-            <div>
-                <label for="body_type">Body type *</label><br>
-                <select id="body_type" name="body_type" required style="width:100%; padding:8px;">
-                    <option value="">Select body type</option>
-                    @foreach($bodyTypes as $type)
-                        <option value="{{ $type }}" @selected(old('body_type') === $type)>{{ $labels[$type] ?? $type }}</option>
-                    @endforeach
-                </select>
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Manajemen Data</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('admin.fashion-categories.index') }}">
+                            <i class="fas fa-tags"></i>
+                            Kategori
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.fashion-items.index') }}" class="active">
+                            <i class="fas fa-tshirt"></i>
+                            Semua Fashion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="top-bar-text">
+                    <h1>Create Fashion Item</h1>
+                    <p>Add a new item for gallery recommendation.</p>
+                </div>
             </div>
         </div>
 
-        <div style="margin-top:10px;">
-            <label for="title">Title *</label><br>
-            <input id="title" type="text" name="title" value="{{ old('title') }}" required maxlength="150" style="width:100%; padding:8px;">
-        </div>
+        <div class="content-area">
 
-        <div style="margin-top:10px;">
-            <label for="description">Description</label><br>
-            <textarea id="description" name="description" rows="4" style="width:100%; padding:8px;">{{ old('description') }}</textarea>
-        </div>
+            @if($errors->any())
+                <div class="alert-box alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Periksa kembali:</strong>
+                        <ul style="margin: 6px 0 0 16px;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
 
-        <div style="margin-top:12px;">
-            <label>Image source *</label><br>
-            <label><input type="radio" name="image_source" value="upload" @checked(old('image_source', 'upload') === 'upload')> Upload</label>
-            <label style="margin-left:12px;"><input type="radio" name="image_source" value="url" @checked(old('image_source') === 'url')> URL</label>
-        </div>
+            <div class="form-panel" style="max-width: 1000px; margin: 0 auto;">
+                <div class="panel-header">
+                    <i class="fas fa-plus-circle"></i>
+                    <h2>Create Fashion Item</h2>
+                </div>
 
-        <div id="uploadField" style="margin-top:10px;">
-            <label for="image_file">Image file *</label><br>
-            <input id="image_file" type="file" name="image_file" accept="image/*" style="width:100%; padding:8px;">
-        </div>
+                <form method="POST" action="{{ route('admin.fashion-items.store') }}" enctype="multipart/form-data" class="fashion-form">
+                    @csrf
 
-        <div id="urlField" style="margin-top:10px;">
-            <label for="image_url">Image URL *</label><br>
-            <input id="image_url" type="url" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg" style="width:100%; padding:8px;">
-        </div>
+                    {{-- SECTION 1 --}}
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-number">01</div>
+                            <div class="form-section-title">
+                                <h3>Informasi Dasar</h3>
+                                <p>Judul, kategori, dan body type.</p>
+                            </div>
+                        </div>
 
-        <div style="margin-top:10px;">
-            <label for="purchase_link">Purchase link</label><br>
-            <input id="purchase_link" type="url" name="purchase_link" value="{{ old('purchase_link') }}" placeholder="https://store.example/product" style="width:100%; padding:8px;">
-        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Category *</label>
+                                <select name="fashion_category_id" required>
+                                    <option value="">Select category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}"
+                                            @selected(old('fashion_category_id') == $category->id)>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-        <div style="display:flex; gap:14px; align-items:center; margin-top:12px;">
-            <label for="sort_order">Sort order</label>
-            <input id="sort_order" type="number" min="0" name="sort_order" value="{{ old('sort_order', 0) }}" style="padding:8px; width:120px;">
-            <input type="hidden" name="is_active" value="0">
-            <label><input type="checkbox" name="is_active" value="1" @checked(old('is_active', 1))> Active</label>
-        </div>
+                            <div class="form-group">
+                                <label>Body Type *</label>
+                                <select name="body_type" required>
+                                    <option value="">Select body type</option>
+                                    @foreach($bodyTypes as $type)
+                                        <option value="{{ $type }}"
+                                            @selected(old('body_type') === $type)>
+                                            {{ $labels[$type] ?? $type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
-        <div style="display:flex; gap:8px; margin-top:16px;">
-            <button type="submit" style="padding:8px 12px;">Save Item</button>
-            <a href="{{ route('admin.fashion-items.index') }}">Back</a>
+                        <div class="form-group">
+                            <label>Title *</label>
+                            <input type="text" name="title" value="{{ old('title') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="4">{{ old('description') }}</textarea>
+                        </div>
+                    </div>
+
+                    {{-- SECTION 2 --}}
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-number">02</div>
+                            <div class="form-section-title">
+                                <h3>Image</h3>
+                                <p>Pilih sumber gambar.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="radio" name="image_source" value="upload"
+                                @checked(old('image_source', 'upload') === 'upload')>
+                                Upload
+                            </label>
+
+                            <label style="margin-left:12px;">
+                                <input type="radio" name="image_source" value="url"
+                                @checked(old('image_source') === 'url')>
+                                URL
+                            </label>
+                        </div>
+
+                        <div id="uploadField" class="form-group">
+                            <label>Image File *</label>
+                            <input type="file" name="image_file" accept="image/*">
+                        </div>
+
+                        <div id="urlField" class="form-group">
+                            <label>Image URL *</label>
+                            <input type="url" name="image_url" value="{{ old('image_url') }}">
+                        </div>
+                    </div>
+
+                    {{-- SECTION 3 --}}
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-number">03</div>
+                            <div class="form-section-title">
+                                <h3>Pengaturan</h3>
+                                <p>Link, sort, dan status.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Purchase Link</label>
+                            <input type="url" name="purchase_link" value="{{ old('purchase_link') }}">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Sort Order</label>
+                                <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status</label>
+                                <input type="hidden" name="is_active" value="0">
+
+                                <label class="toggle-row">
+                                    <input type="checkbox" name="is_active" value="1"
+                                        @checked(old('is_active', 1))>
+                                    <span>Active</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ route('admin.fashion-items.index') }}" class="btn-cancel">Back</a>
+                        <button type="submit" class="btn-submit">
+                            Save Item
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
-    </form>
+    </main>
 </div>
 @endsection
 
-@push('scripts')
-<script>
-    (function () {
-        const uploadField = document.getElementById('uploadField');
-        const urlField = document.getElementById('urlField');
-        const radios = document.querySelectorAll('input[name="image_source"]');
-
-        function syncSourceFields() {
-            const source = document.querySelector('input[name="image_source"]:checked')?.value || 'upload';
-            uploadField.style.display = source === 'upload' ? 'block' : 'none';
-            urlField.style.display = source === 'url' ? 'block' : 'none';
-        }
-
-        radios.forEach((radio) => radio.addEventListener('change', syncSourceFields));
-        syncSourceFields();
-    })();
-</script>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/admin-dashboard.css') }}">
 @endpush

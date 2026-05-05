@@ -3,217 +3,402 @@
 @section('title', 'SMARTfit - Admin Dashboard')
 
 @section('content')
-<div class="admin-dashboard">   
-    <div class="dashboard-container">
-        <div class="dashboard-header">
-            <div class="header-left">
-                <h1>Fashion Management</h1>
-                <p>Kelola koleksi fashion, rekomendasi, dan toko penyedia</p>
-            </div>
-            <div class="header-right">
-                <div class="admin-profile">
-                    <div class="admin-info">
-                        <span class="admin-name">Admin User</span>
-                        <span class="admin-role">Administrator</span>
-                    </div>
-                    <div class="admin-avatar">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                </div>
-            </div>
+<div class="admin-wrapper">
+    {{-- Overlay Mobile --}}
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    {{-- SIDEBAR --}}
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <h2>SMARTfit</h2>
+            <span>Admin Panel</span>
         </div>
 
-        @if(session('success'))
-            <div style="margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: #e8f8ef; color: #1f7a4c; border: 1px solid #cbe9d7;">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div style="margin: 0 0 16px; padding: 12px 14px; border-radius: 12px; background: #fdecec; color: #8a2f2f; border: 1px solid #f5cfcf;">
-                <strong>Periksa kembali input Anda:</strong>
-                <ul style="margin: 8px 0 0 16px; padding: 0;">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Menu Utama</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="#" class="active" data-page="dashboard" onclick="switchPage('dashboard', this)">
+                            <i class="fas fa-chart-pie"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-page="add-fashion" onclick="switchPage('add-fashion', this)">
+                            <i class="fas fa-plus-circle"></i>
+                            Tambah Fashion
+                        </a>
+                    </li>
                 </ul>
             </div>
-        @endif
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 18px;">
-            <a href="{{ route('admin.fashion-categories.index') }}" class="btn-submit" style="text-decoration:none; width:auto; padding:10px 14px;">
-                <i class="fas fa-tags"></i> Kelola Kategori
-            </a>
-            <a href="{{ route('admin.fashion-items.index') }}" class="btn-submit" style="text-decoration:none; width:auto; padding:10px 14px;">
-                <i class="fas fa-tshirt"></i> Kelola Fashion Items
-            </a>
-        </div>
+            <div class="sidebar-section">
+                <p class="sidebar-section-title">Manajemen Data</p>
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="{{ route('admin.fashion-categories.index') }}">
+                            <i class="fas fa-tags"></i>
+                            Kategori
+                            <span class="badge">9</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.fashion-items.index') }}">
+                            <i class="fas fa-tshirt"></i>
+                            Semua Fashion
+                            <span class="badge" id="sidebarItemCount">{{ $stats['total_items'] ?? 0 }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-tshirt"></i>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    <i class="fas fa-user-shield"></i>
                 </div>
-                <div class="stat-info">
-                    <h3 id="totalItemsCount">{{ $stats['total_items'] ?? 0 }}</h3>
-                    <p>Total Fashion</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-tag"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>9</h3>
-                    <p>Body Types</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-store"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="totalStoresCount">{{ $stats['total_stores'] ?? 0 }}</h3>
-                    <p>Stores</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>81.9%</h3>
-                    <p>Accuracy</p>
+                <div class="sidebar-user-info">
+                    <span class="name">Admin SMARTfit</span>
+                    <span class="role">Administrator</span>
                 </div>
             </div>
         </div>
+    </aside>
 
-        <div class="two-columns">
-            <div class="form-panel">
-                <div class="panel-header">
-                    <i class="fas fa-plus-circle"></i>
-                    <h2>Tambah Fashion Item</h2>
+    {{-- MAIN CONTENT --}}
+    <main class="admin-main">
+        {{-- Top Bar --}}
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="top-bar-text">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Ringkasan & analitik fashion</p>
                 </div>
-
-                <form id="fashionForm" class="fashion-form" action="{{ route('admin.dashboard.fashion-items.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    <div class="form-group">
-                        <label>Gambar Fashion <span class="required">*</span></label>
-                        <div class="tag-group" id="imageSourceTags" style="margin-bottom: 12px;">
-                            <span class="tag" data-value="upload">Image Upload</span>
-                            <span class="tag" data-value="url">Image URL</span>
-                        </div>
-                        <input type="hidden" id="selectedImageSource" name="image_source" value="{{ old('image_source', 'upload') }}">
-
-                        <div id="uploadSourceGroup" style="{{ old('image_source', 'upload') === 'url' ? 'display:none;' : '' }}">
-                            <div class="upload-area" onclick="document.getElementById('imageInput').click()">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p>Klik untuk upload gambar</p>
-                                <span>JPG, PNG, WEBP (Max 2MB)</span>
-                            </div>
-                            <input type="file" id="imageInput" name="image_file" accept="image/*" style="display: none;">
-                        </div>
-
-                        <div id="urlSourceGroup" style="{{ old('image_source', 'upload') === 'url' ? 'display:block; margin-top:12px;' : 'display:none; margin-top:12px;' }}">
-                            <input type="url" id="imageUrlInput" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
-                        </div>
-
-                        <div class="image-preview" id="imagePreview">
-                            <img id="previewImg" src="" alt="Preview Image">
-                            <button type="button" class="remove-img" onclick="removeImage()"><i class="fas fa-times"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nama Fashion <span class="required">*</span></label>
-                            <input type="text" id="fashionName" name="title" value="{{ old('title') }}" placeholder="Contoh: Floral Summer Dress">
-                        </div>
-                        <div class="form-group">
-                            <label>Body Type <span class="required">*</span></label>
-                            <div class="tag-group" id="bodyTypeTags">
-                                <span class="tag" data-value="hourglass">⌛ Hourglass</span>
-                                <span class="tag" data-value="rectangle">◻️ Rectangle</span>
-                                <span class="tag" data-value="spoon">🥄 Spoon</span>
-                                <span class="tag" data-value="triangle">▼ Triangle</span>
-                                <span class="tag" data-value="inverted">▲ Inverted</span>
-                            </div>
-                            <input type="hidden" id="selectedBodyType" name="body_type" value="{{ old('body_type') }}">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Style Preference <span class="required">*</span></label>
-                            <div class="tag-group" id="styleTags">
-                                <span class="tag" data-value="casual">👕 Casual</span>
-                                <span class="tag" data-value="formal">👔 Formal</span>
-                                <span class="tag" data-value="sporty">🏃 Sporty</span>
-                                <span class="tag" data-value="classic">🕰️ Classic</span>
-                                <span class="tag" data-value="bohemian">🌿 Bohemian</span>
-                            </div>
-                            <input type="hidden" id="selectedStyle" name="style_preference" value="{{ old('style_preference') }}">
-                        </div>
-                        <div class="form-group">
-                            <label>Color Tone</label>
-                            <div class="tag-group" id="colorTags">
-                                <span class="tag" data-value="light">☀️ Light</span>
-                                <span class="tag" data-value="bright">🌈 Bright</span>
-                                <span class="tag" data-value="neutral">⚪ Neutral</span>
-                                <span class="tag" data-value="dark">🌙 Dark</span>
-                                <span class="tag" data-value="earth">🌍 Earth</span>
-                            </div>
-                            <input type="hidden" id="selectedColor" name="color_tone" value="{{ old('color_tone') }}">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Deskripsi <span class="required">*</span></label>
-                        <textarea id="description" name="description" rows="3" placeholder="Deskripsi detail tentang fashion item ini...">{{ old('description') }}</textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Toko Penyedia <span class="required">*</span></label>
-                        <div class="store-input-group">
-                            <input type="text" id="storeName" placeholder="Nama Toko">
-                            <input type="text" id="storeLink" placeholder="Link Toko (opsional)">
-                            <button type="button" class="btn-add" onclick="addStore()">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                        <div class="store-list" id="storeList"></div>
-                        <input type="hidden" id="storesData" name="stores_payload" value="{{ old('stores_payload', '[]') }}">
-                    </div>
-
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-save"></i> Simpan Fashion Item
-                    </button>
-                </form>
             </div>
-
-            <div class="list-panel">
-                <div class="panel-header">
-                    <i class="fas fa-tshirt"></i>
-                    <h2>Koleksi Fashion</h2>
-                    <div class="search-wrapper">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Cari fashion...">
-                    </div>
-                </div>
-
-                <div class="fashion-grid" id="fashionGrid"></div>
-            </div>
+            <form action="{{ route('admin.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
 
-        <form action="{{ route('admin.logout') }}" method="POST" class="logout-form">
-            @csrf
-            <button type="submit" class="btn-logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </button>
-        </form>
+        {{-- Content Area --}}
+        <div class="content-area">
+            {{-- Alert Sukses --}}
+            @if(session('success'))
+                <div class="alert-box alert-success">
+                    <i class="fas fa-check-circle"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            {{-- Alert Error --}}
+            @if($errors->any())
+                <div class="alert-box alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Periksa kembali:</strong>
+                        <ul style="margin: 6px 0 0 16px; padding: 0;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+            {{-- ========== HALAMAN DASHBOARD ========== --}}
+            <div class="page-section active" id="page-dashboard">
+                {{-- 4 Card Analitik --}}
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <div class="analytics-card-icon primary">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                        </div>
+                        <div class="analytics-card-value" id="totalItemsCount">{{ $stats['total_items'] ?? 0 }}</div>
+                        <div class="analytics-card-label">Total Fashion</div>
+                        <div class="analytics-card-change positive">
+                            <i class="fas fa-check-circle"></i> Items tersimpan
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <div class="analytics-card-icon success">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        </div>
+                        <div class="analytics-card-value" id="totalStoresCount">{{ $stats['total_stores'] ?? 0 }}</div>
+                        <div class="analytics-card-label">Total Toko</div>
+                        <div class="analytics-card-change positive">
+                            <i class="fas fa-shop"></i> Toko terdaftar
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <div class="analytics-card-icon warning">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="analytics-card-value">124</div>
+                        <div class="analytics-card-label">Pengguna</div>
+                        <div class="analytics-card-change positive">
+                            <i class="fas fa-arrow-up"></i> +12 bulan ini
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="analytics-card-header">
+                            <div class="analytics-card-icon info">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                        </div>
+                        <div class="analytics-card-value">81.9%</div>
+                        <div class="analytics-card-label">Akurasi</div>
+                        <div class="analytics-card-change positive">
+                            <i class="fas fa-arrow-up"></i> +2.1% peningkatan
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dua Kolom: Daftar Fashion + Pengguna --}}
+                <div class="panel-section">
+                    {{-- Koleksi Fashion --}}
+                    <div class="info-panel">
+                        <div class="info-panel-header">
+                            <h3>
+                                <i class="fas fa-tshirt" style="color: #C5B09F;"></i> 
+                                Koleksi Fashion
+                            </h3>
+                            <div class="search-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Cari fashion...">
+                            </div>
+                        </div>
+                        <div class="info-panel-body">
+                            <div class="fashion-grid" id="fashionGrid"></div>
+                        </div>
+                    </div>
+
+                    {{-- Pengguna Terbaru --}}
+                    <div class="info-panel">
+                        <div class="info-panel-header">
+                            <h3>
+                                <i class="fas fa-users" style="color: #C5B09F;"></i> 
+                                Pengguna Terbaru
+                            </h3>
+                        </div>
+                        <div class="info-panel-body" style="padding: 0;">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pengguna</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm">A</div>
+                                                <div>
+                                                    <div class="user-name">Aisyah Putri</div>
+                                                    <div class="user-email">aisyah@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge new">Baru</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm">R</div>
+                                                <div>
+                                                    <div class="user-name">Rizky Pratama</div>
+                                                    <div class="user-email">rizky@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm">S</div>
+                                                <div>
+                                                    <div class="user-name">Siti Nurhaliza</div>
+                                                    <div class="user-email">siti@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge active">Aktif</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm">D</div>
+                                                <div>
+                                                    <div class="user-name">Dewi Lestari</div>
+                                                    <div class="user-email">dewi@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge new">Baru</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell">
+                                                <div class="user-avatar-sm">B</div>
+                                                <div>
+                                                    <div class="user-name">Budi Santoso</div>
+                                                    <div class="user-email">budi@email.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="status-badge active">Aktif</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========== HALAMAN TAMBAH FASHION ========== --}}
+            <div class="page-section" id="page-add-fashion">
+                <div class="form-panel">
+                    <div class="panel-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <h2>Tambah Fashion Item Baru</h2>
+                    </div>
+
+                    <form id="fashionForm" class="fashion-form" action="{{ route('admin.dashboard.fashion-items.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="form-group">
+                            <label>Gambar Fashion <span class="required">*</span></label>
+                            <div class="tag-group" id="imageSourceTags" style="margin-bottom: 12px;">
+                                <span class="tag active" data-value="upload">Upload Gambar</span>
+                                <span class="tag" data-value="url">URL Gambar</span>
+                            </div>
+                            <input type="hidden" id="selectedImageSource" name="image_source" value="{{ old('image_source', 'upload') }}">
+
+                            <div id="uploadSourceGroup">
+                                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Klik untuk upload gambar</p>
+                                    <span>JPG, PNG, WEBP (Max 2MB)</span>
+                                </div>
+                                <input type="file" id="imageInput" name="image_file" accept="image/*" style="display: none;">
+                            </div>
+
+                            <div id="urlSourceGroup" style="display: none; margin-top: 12px;">
+                                <input type="url" id="imageUrlInput" name="image_url" value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg">
+                            </div>
+
+                            <div class="image-preview" id="imagePreview">
+                                <img id="previewImg" src="" alt="Preview">
+                                <button type="button" class="remove-img" onclick="removeImage()"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nama Fashion <span class="required">*</span></label>
+                                <input type="text" id="fashionName" name="title" value="{{ old('title') }}" placeholder="Contoh: Floral Summer Dress">
+                            </div>
+                            <div class="form-group">
+                                <label>Body Type <span class="required">*</span></label>
+                                <div class="option-grid" id="bodyTypeTags">
+    <div class="option-card" data-value="hourglass">
+        <div class="icon">⌛</div>
+        Hourglass
     </div>
+    <div class="option-card" data-value="rectangle">
+        <div class="icon">◻️</div>
+        Rectangle
+    </div>
+    <div class="option-card" data-value="spoon">
+        <div class="icon">🥄</div>
+        Spoon
+    </div>
+    <div class="option-card" data-value="triangle">
+        <div class="icon">▼</div>
+        Triangle
+    </div>
+    <div class="option-card" data-value="inverted">
+        <div class="icon">▲</div>
+        Inverted
+    </div>
+</div>
+                                <input type="hidden" id="selectedBodyType" name="body_type" value="{{ old('body_type') }}">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Style <span class="required">*</span></label>
+                                <input type="hidden" id="selectedColor" name="color_tone" value="">
+                                <div class="option-grid" id="styleTags">
+    <div class="option-card" data-value="casual">
+        <div class="icon">👕</div>
+        Casual
+    </div>
+    <div class="option-card" data-value="formal">
+        <div class="icon">👔</div>
+        Formal
+    </div>
+    <div class="option-card" data-value="sporty">
+        <div class="icon">🏃</div>
+        Sporty
+    </div>
+    <div class="option-card" data-value="classic">
+        <div class="icon">🕰️</div>
+        Classic
+    </div>
+    <div class="option-card" data-value="bohemian">
+        <div class="icon">🌿</div>
+        Bohemian
+    </div>
+</div>
+                                <input type="hidden" id="selectedStyle" name="style_preference" value="{{ old('style_preference') }}">
+                            </div>
+
+                        <div class="form-group">
+                            <label>Deskripsi <span class="required">*</span></label>
+                            <textarea id="description" name="description" rows="3" placeholder="Deskripsi detail fashion item...">{{ old('description') }}</textarea>
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <label>Toko Penyedia <span class="required">*</span></label>
+                            <div class="store-input-group">
+                                <input type="text" id="storeName" placeholder="Nama Toko">
+                                <input type="text" id="storeLink" placeholder="Link (opsional)">
+                                <button type="button" class="btn-add" onclick="addStore()">
+                                    <i class="fas fa-plus"></i> Tambah
+                                </button>
+                            </div>
+                            <div class="store-list" id="storeList"></div>
+                            <input type="hidden" id="storesData" name="stores_payload" value="{{ old('stores_payload', '[]') }}">
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Simpan Fashion Item
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>
 @endsection
 
@@ -224,10 +409,10 @@
 @push('scripts')
 <script id="dashboardInitialData" type="application/json">
 {!! json_encode([
-        'fashionItems' => ($fashionItemsPayload ?? collect())->values()->all(),
-        'oldStoresPayload' => old('stores_payload', '[]'),
-        'deleteEndpointTemplate' => route('admin.dashboard.fashion-items.destroy', ['id' => '__ID__']),
-    ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+    'fashionItems' => ($fashionItemsPayload ?? collect())->values()->all(),
+    'oldStoresPayload' => old('stores_payload', '[]'),
+    'deleteEndpointTemplate' => route('admin.dashboard.fashion-items.destroy', ['id' => '__ID__']),
+], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
 </script>
 <script>
     const initialData = JSON.parse(document.getElementById('dashboardInitialData').textContent || '{}');
@@ -235,7 +420,7 @@
     const oldStoresPayload = initialData.oldStoresPayload || '[]';
     const deleteEndpointTemplate = String(initialData.deleteEndpointTemplate || '');
 
-    let fashionItems = Array.isArray(initialFashionItems) ? initialFashionItems : [];
+    let fashionItems = [...initialFashionItems];
     let selectedBodyType = '';
     let selectedStyle = '';
     let selectedColor = '';
@@ -243,152 +428,126 @@
     let storesArray = [];
 
     const bodyLabelMap = {
-        hourglass: '⌛ Hourglass',
-        rectangle: '◻️ Rectangle',
-        spoon: '🥄 Spoon',
-        triangle: '▼ Triangle',
-        inverted_triangle: '▲ Inverted Triangle',
-        y_shape: '▲ Y',
-        u: '⬭ U',
-        inverted_u: '⇵ Inverted U',
-        diamond: '◆ Diamond',
+        hourglass: '⌛ Hourglass', rectangle: '◻️ Rectangle', spoon: '🥄 Spoon',
+        triangle: '▼ Triangle', inverted: '▲ Inverted', inverted_triangle: '▲ Inverted Triangle',
+        y_shape: '▲ Y', u: '⬭ U', inverted_u: '⇵ Inverted U', diamond: '◆ Diamond',
     };
-
     const styleLabelMap = {
-        casual: '👕 Casual',
-        formal: '👔 Formal',
-        sporty: '🏃 Sporty',
-        classic: '🕰️ Classic',
-        bohemian: '🌿 Bohemian',
+        casual: '👕 Casual', formal: '👔 Formal', sporty: '🏃 Sporty',
+        classic: '🕰️ Classic', bohemian: '🌿 Bohemian',
     };
-
     const colorLabelMap = {
-        light: '☀️ Light',
-        bright: '🌈 Bright',
-        neutral: '⚪ Neutral',
-        dark: '🌙 Dark',
-        earth: '🌍 Earth',
+        light: '☀️ Light', bright: '🌈 Bright', neutral: '⚪ Neutral',
+        dark: '🌙 Dark', earth: '🌍 Earth',
     };
 
-    function normalizeImageSource(value) {
-        return value === 'url' ? 'url' : 'upload';
+    const pageTitles = {
+        'dashboard': { title: 'Dashboard', subtitle: 'Ringkasan & analitik fashion' },
+        'add-fashion': { title: 'Tambah Fashion', subtitle: 'Form tambah item baru' },
+    };
+
+    // ===== PAGE SWITCHING =====
+    function switchPage(pageName, el) {
+        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+        if (el) el.classList.add('active');
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        const page = document.getElementById('page-' + pageName);
+        if (page) page.classList.add('active');
+        const info = pageTitles[pageName] || { title: pageName, subtitle: '' };
+        document.getElementById('pageTitle').textContent = info.title;
+        document.getElementById('pageSubtitle').textContent = info.subtitle;
+        closeSidebar();
     }
 
-    function setImagePreviewFromUrl(url) {
-        const preview = document.getElementById('imagePreview');
-        const previewImg = document.getElementById('previewImg');
-        const cleanedUrl = String(url || '').trim();
+    function toggleSidebar() {
+        document.getElementById('adminSidebar').classList.toggle('open');
+        document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
 
-        if (!cleanedUrl) {
-            preview.style.display = 'none';
-            previewImg.src = '';
-            return;
-        }
+    function closeSidebar() {
+        document.getElementById('adminSidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+    }
 
-        previewImg.src = cleanedUrl;
-        preview.style.display = 'flex';
+    // ===== HELPERS =====
+    function escapeHtml(v) {
+        return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function normalizeSource(v) { return v === 'url' ? 'url' : 'upload'; }
+
+    function setPreview(url) {
+        const p = document.getElementById('imagePreview');
+        const img = document.getElementById('previewImg');
+        const u = String(url || '').trim();
+        if (!u) { p.style.display = 'none'; img.src = ''; return; }
+        img.src = u;
+        p.style.display = 'flex';
     }
 
     function applyImageSource(source) {
-        selectedImageSource = normalizeImageSource(source);
-
-        const sourceInput = document.getElementById('selectedImageSource');
-        const uploadGroup = document.getElementById('uploadSourceGroup');
-        const urlGroup = document.getElementById('urlSourceGroup');
-        const imageInput = document.getElementById('imageInput');
-        const imageUrlInput = document.getElementById('imageUrlInput');
-
-        sourceInput.value = selectedImageSource;
+        selectedImageSource = normalizeSource(source);
+        document.getElementById('selectedImageSource').value = selectedImageSource;
         activateTag('#imageSourceTags', selectedImageSource);
+        document.getElementById('uploadSourceGroup').style.display = selectedImageSource === 'upload' ? '' : 'none';
+        document.getElementById('urlSourceGroup').style.display = selectedImageSource === 'url' ? 'block' : 'none';
+        if (selectedImageSource === 'upload') { setPreview(''); return; }
+        document.getElementById('imageInput').value = '';
+        setPreview(document.getElementById('imageUrlInput').value);
+    }
 
-        uploadGroup.style.display = selectedImageSource === 'upload' ? '' : 'none';
-        urlGroup.style.display = selectedImageSource === 'url' ? 'block' : 'none';
+    function activateTag(selector, value) {
+        document.querySelectorAll(selector + ' .tag, ' + selector + ' .option-card').forEach(t => t.classList.toggle('active', t.dataset.value === value));
+    }
 
-        if (selectedImageSource === 'upload') {
-            setImagePreviewFromUrl('');
-            return;
+    function parseStores(raw) {
+        let arr = [];
+        if (Array.isArray(raw)) arr = raw;
+        else if (typeof raw === 'string' && raw.trim()) {
+            try { const p = JSON.parse(raw); arr = Array.isArray(p) ? p : []; } catch(e) { arr = []; }
         }
-
-        imageInput.value = '';
-        setImagePreviewFromUrl(imageUrlInput.value);
+        return arr.map(s => ({ name: String(s?.name ?? '').trim(), link: String(s?.link ?? '').trim() })).filter(s => s.name);
     }
 
-    function escapeHtml(value) {
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    function parseStoresPayload(rawValue) {
-        let rawStores = [];
-
-        if (Array.isArray(rawValue)) {
-            rawStores = rawValue;
-        } else if (typeof rawValue === 'string' && rawValue.trim() !== '') {
-            try {
-                const parsed = JSON.parse(rawValue);
-                rawStores = Array.isArray(parsed) ? parsed : [];
-            } catch (error) {
-                rawStores = [];
-            }
-        }
-
-        return rawStores
-            .map((store) => ({
-                name: String(store?.name ?? '').trim(),
-                link: String(store?.link ?? '').trim(),
-            }))
-            .filter((store) => store.name !== '');
-    }
-
+    // ===== STATS & GRID =====
     function updateStats() {
-        document.getElementById('totalItemsCount').innerText = fashionItems.length;
-
-        const uniqueStores = [
-            ...new Set(
-                fashionItems
-                    .flatMap((item) => Array.isArray(item.stores) ? item.stores : [])
-                    .map((store) => String(store?.name ?? '').trim().toLowerCase())
-                    .filter((name) => name !== '')
-            ),
-        ];
-
-        document.getElementById('totalStoresCount').innerText = uniqueStores.length;
+        const el = document.getElementById('totalItemsCount');
+        if (el) el.textContent = fashionItems.length;
+        const sideEl = document.getElementById('sidebarItemCount');
+        if (sideEl) sideEl.textContent = fashionItems.length;
+        const uniqueStores = [...new Set(
+            fashionItems.flatMap(item => Array.isArray(item.stores) ? item.stores : [])
+            .map(s => String(s?.name ?? '').trim().toLowerCase()).filter(n => n)
+        )];
+        const storeEl = document.getElementById('totalStoresCount');
+        if (storeEl) storeEl.textContent = uniqueStores.length;
     }
 
     function renderFashionGrid() {
         const grid = document.getElementById('fashionGrid');
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-        const filtered = fashionItems.filter((item) => {
-            const itemName = String(item.name ?? '').toLowerCase();
-            const bodyLabel = String(bodyLabelMap[item.bodyType] || item.bodyTypeLabel || '').toLowerCase();
-            const styleLabel = String(styleLabelMap[item.style] || item.styleLabel || '').toLowerCase();
-
-            return itemName.includes(searchTerm) || bodyLabel.includes(searchTerm) || styleLabel.includes(searchTerm);
+        if (!grid) return;
+        const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        const filtered = fashionItems.filter(item => {
+            const name = String(item.name ?? '').toLowerCase();
+            const body = String(bodyLabelMap[item.bodyType] || item.bodyTypeLabel || '').toLowerCase();
+            const style = String(styleLabelMap[item.style] || item.styleLabel || '').toLowerCase();
+            return name.includes(term) || body.includes(term) || style.includes(term);
         });
 
-        if (filtered.length === 0) {
+        if (!filtered.length) {
             grid.innerHTML = '<div class="empty-state"><i class="fas fa-tshirt"></i><p>Belum ada fashion item</p><span>Silakan tambah item baru</span></div>';
             return;
         }
 
-        grid.innerHTML = filtered.map((item) => {
-            const description = String(item.description ?? '');
-            const trimmedDescription = description.length > 80 ? `${description.substring(0, 80)}...` : description;
+        grid.innerHTML = filtered.map(item => {
+            const desc = String(item.description ?? '');
+            const trimmed = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
             const stores = Array.isArray(item.stores) ? item.stores : [];
-            const storeNames = stores.map((store) => store.name).filter(Boolean).join(', ');
-            const bodyLabel = bodyLabelMap[item.bodyType] || item.bodyTypeLabel || item.bodyType || '';
-            const styleLabel = styleLabelMap[item.style] || item.styleLabel || item.style || '';
-            const colorLabel = colorLabelMap[item.color] || item.colorLabel || '⚪ Neutral';
-
+            const storeNames = stores.map(s => s.name).filter(Boolean).join(', ');
             return `
                 <div class="fashion-card">
                     <div class="card-image">
-                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=Image+Not+Found'">
+                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=No+Image'">
                         <div class="card-actions">
                             <button class="action-btn edit" onclick="editItem(${Number(item.id)})"><i class="fas fa-edit"></i></button>
                             <button class="action-btn delete" onclick="deleteItem(${Number(item.id)})"><i class="fas fa-trash"></i></button>
@@ -397,11 +556,11 @@
                     <div class="card-body">
                         <h3>${escapeHtml(item.name)}</h3>
                         <div class="card-tags">
-                            <span class="tag-badge body">${escapeHtml(bodyLabel)}</span>
-                            <span class="tag-badge style">${escapeHtml(styleLabel)}</span>
-                            <span class="tag-badge color">${escapeHtml(colorLabel)}</span>
+                            <span class="tag-badge body">${escapeHtml(bodyLabelMap[item.bodyType] || item.bodyTypeLabel || item.bodyType || '')}</span>
+                            <span class="tag-badge style">${escapeHtml(styleLabelMap[item.style] || item.styleLabel || item.style || '')}</span>
+                            <span class="tag-badge color">${escapeHtml(colorLabelMap[item.color] || item.colorLabel || 'Neutral')}</span>
                         </div>
-                        <p class="card-desc">${escapeHtml(trimmedDescription)}</p>
+                        <p class="card-desc">${escapeHtml(trimmed)}</p>
                         <div class="card-stores"><i class="fas fa-store"></i> ${escapeHtml(storeNames || 'Belum ada toko')}</div>
                     </div>
                 </div>
@@ -409,252 +568,155 @@
         }).join('');
     }
 
-    function activateTag(groupSelector, value) {
-        const tags = document.querySelectorAll(`${groupSelector} .tag`);
-        tags.forEach((tag) => {
-            tag.classList.toggle('active', tag.dataset.value === value);
-        });
-    }
-
-    function initializeTagSelections() {
-        const bodyTypeHidden = document.getElementById('selectedBodyType');
-        const styleHidden = document.getElementById('selectedStyle');
-        const colorHidden = document.getElementById('selectedColor');
-        const imageSourceHidden = document.getElementById('selectedImageSource');
-
-        selectedBodyType = String(bodyTypeHidden.value || '').trim();
-        selectedStyle = String(styleHidden.value || '').trim();
-        selectedColor = String(colorHidden.value || '').trim();
-        selectedImageSource = normalizeImageSource(String(imageSourceHidden.value || 'upload').trim());
-
-        const uiBodyType = selectedBodyType === 'inverted_triangle' ? 'inverted' : selectedBodyType;
-
-        if (uiBodyType) {
-            activateTag('#bodyTypeTags', uiBodyType);
-        }
-
-        if (selectedStyle) {
-            activateTag('#styleTags', selectedStyle);
-        }
-
-        if (selectedColor) {
-            activateTag('#colorTags', selectedColor);
-        }
-
-        applyImageSource(selectedImageSource);
-    }
-
-    document.querySelectorAll('#bodyTypeTags .tag').forEach((tag) => {
-        tag.addEventListener('click', function () {
-            document.querySelectorAll('#bodyTypeTags .tag').forEach((el) => el.classList.remove('active'));
-            this.classList.add('active');
-            selectedBodyType = this.dataset.value;
-            document.getElementById('selectedBodyType').value = selectedBodyType;
-        });
-    });
-
-    document.querySelectorAll('#styleTags .tag').forEach((tag) => {
-        tag.addEventListener('click', function () {
-            document.querySelectorAll('#styleTags .tag').forEach((el) => el.classList.remove('active'));
-            this.classList.add('active');
-            selectedStyle = this.dataset.value;
-            document.getElementById('selectedStyle').value = selectedStyle;
-        });
-    });
-
-    document.querySelectorAll('#colorTags .tag').forEach((tag) => {
-        tag.addEventListener('click', function () {
-            document.querySelectorAll('#colorTags .tag').forEach((el) => el.classList.remove('active'));
-            this.classList.add('active');
-            selectedColor = this.dataset.value;
-            document.getElementById('selectedColor').value = selectedColor;
-        });
-    });
-
-    document.querySelectorAll('#imageSourceTags .tag').forEach((tag) => {
-        tag.addEventListener('click', function () {
-            applyImageSource(this.dataset.value);
-        });
-    });
-
-    document.getElementById('imageInput').addEventListener('change', function (event) {
-        if (event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('previewImg').src = e.target.result;
-                document.getElementById('imagePreview').style.display = 'flex';
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    });
-
-    document.getElementById('imageUrlInput').addEventListener('input', function () {
-        if (selectedImageSource !== 'url') {
-            return;
-        }
-
-        setImagePreviewFromUrl(this.value);
-    });
-
-    function removeImage() {
-        setImagePreviewFromUrl('');
-
-        if (selectedImageSource === 'upload') {
-            document.getElementById('imageInput').value = '';
-            return;
-        }
-
-        document.getElementById('imageUrlInput').value = '';
-    }
-
+    // ===== STORE =====
     function addStore() {
         const name = document.getElementById('storeName').value.trim();
         const link = document.getElementById('storeLink').value.trim();
-
-        if (!name) {
-            alert('Nama toko wajib diisi!');
-            return;
-        }
-
+        if (!name) { alert('Nama toko wajib diisi!'); return; }
         storesArray.push({ name, link });
         renderStoreList();
         document.getElementById('storeName').value = '';
         document.getElementById('storeLink').value = '';
     }
 
-    function removeStore(index) {
-        storesArray.splice(index, 1);
-        renderStoreList();
-    }
+    function removeStore(index) { storesArray.splice(index, 1); renderStoreList(); }
 
     function renderStoreList() {
         const container = document.getElementById('storeList');
-
-        if (storesArray.length === 0) {
-            container.innerHTML = '<p class="empty-stores">Belum ada toko, tambahkan toko penyedia</p>';
-        } else {
-            container.innerHTML = storesArray.map((store, index) => `
-                <div class="store-item">
-                    <span><i class="fas fa-store"></i> ${escapeHtml(store.name)}</span>
-                    <button class="remove-store" onclick="removeStore(${index})"><i class="fas fa-times-circle"></i></button>
-                </div>
-            `).join('');
-        }
-
+        if (!container) return;
+        container.innerHTML = storesArray.length === 0
+            ? '<p class="empty-stores">Belum ada toko, tambahkan toko penyedia</p>'
+            : storesArray.map((s, i) => `<div class="store-item"><span><i class="fas fa-store"></i> ${escapeHtml(s.name)}</span><button class="remove-store" onclick="removeStore(${i})"><i class="fas fa-times-circle"></i></button></div>`).join('');
         document.getElementById('storesData').value = JSON.stringify(storesArray);
     }
 
-    document.getElementById('fashionForm').addEventListener('submit', function (event) {
-        const name = document.getElementById('fashionName').value.trim();
-        const description = document.getElementById('description').value.trim();
-        const imageInput = document.getElementById('imageInput');
-        const imageUrlInput = document.getElementById('imageUrlInput');
-        const imageUrl = imageUrlInput.value.trim();
+    function removeImage() {
+        setPreview('');
+        if (selectedImageSource === 'upload') { document.getElementById('imageInput').value = ''; return; }
+        document.getElementById('imageUrlInput').value = '';
+    }
 
-        if (!name) {
-            alert('Nama fashion wajib diisi!');
-            event.preventDefault();
-            return;
-        }
-
-        if (!selectedBodyType) {
-            alert('Pilih body type!');
-            event.preventDefault();
-            return;
-        }
-
-        if (!selectedStyle) {
-            alert('Pilih style preference!');
-            event.preventDefault();
-            return;
-        }
-
-        if (!description) {
-            alert('Deskripsi wajib diisi!');
-            event.preventDefault();
-            return;
-        }
-
-        if (selectedImageSource === 'upload' && !imageInput.files[0]) {
-            alert('Gambar fashion wajib diupload!');
-            event.preventDefault();
-            return;
-        }
-
-        if (selectedImageSource === 'url') {
-            if (!imageUrl) {
-                alert('Link gambar wajib diisi!');
-                event.preventDefault();
-                return;
-            }
-
-            try {
-                new URL(imageUrl);
-            } catch (error) {
-                alert('Format link gambar tidak valid.');
-                event.preventDefault();
-                return;
-            }
-        }
-
-        if (storesArray.length === 0) {
-            alert('Tambah minimal 1 toko!');
-            event.preventDefault();
-            return;
-        }
-
-        document.getElementById('storesData').value = JSON.stringify(storesArray);
-    });
-
+    // ===== ITEM ACTIONS =====
     function editItem(id) {
-        const item = fashionItems.find((fashionItem) => Number(fashionItem.id) === Number(id));
-        if (!item || !item.editUrl) {
-            alert('Link edit item tidak tersedia.');
-            return;
-        }
-
+        const item = fashionItems.find(fi => Number(fi.id) === Number(id));
+        if (!item?.editUrl) { alert('Link edit tidak tersedia.'); return; }
         window.location.href = item.editUrl;
     }
 
     function deleteItem(id) {
-        if (!confirm('Hapus item ini?')) {
-            return;
-        }
-
+        if (!confirm('Hapus item ini?')) return;
         const action = deleteEndpointTemplate.replace('__ID__', String(id));
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-
-        if (!csrfToken) {
-            alert('CSRF token tidak ditemukan. Refresh halaman lalu coba lagi.');
-            return;
-        }
-
+        if (!csrfToken) { alert('CSRF token tidak ditemukan.'); return; }
         const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = action;
-
-        const tokenInput = document.createElement('input');
-        tokenInput.type = 'hidden';
-        tokenInput.name = '_token';
-        tokenInput.value = csrfToken;
-
-        form.appendChild(tokenInput);
+        form.method = 'POST'; form.action = action;
+        const input = document.createElement('input');
+        input.type = 'hidden'; input.name = '_token'; input.value = csrfToken;
+        form.appendChild(input);
         document.body.appendChild(form);
         form.submit();
     }
 
-    document.getElementById('searchInput').addEventListener('input', renderFashionGrid);
+    // ===== INITIALIZATION =====
+    function initTags() {
+        const bType = document.getElementById('selectedBodyType');
+        const style = document.getElementById('selectedStyle');
+        const color = document.getElementById('selectedColor');
+        const imgSrc = document.getElementById('selectedImageSource');
 
-    storesArray = parseStoresPayload(oldStoresPayload);
-    initializeTagSelections();
+        selectedBodyType = String(bType?.value || '').trim();
+        selectedStyle = String(style?.value || '').trim();
+        selectedColor = String(color?.value || '').trim();
+        selectedImageSource = normalizeSource(String(imgSrc?.value || 'upload').trim());
+
+        const uiBT = selectedBodyType === 'inverted_triangle' ? 'inverted' : selectedBodyType;
+        if (uiBT) activateTag('#bodyTypeTags', uiBT);
+        if (selectedStyle) activateTag('#styleTags', selectedStyle);
+        if (selectedColor) activateTag('#colorTags', selectedColor);
+        applyImageSource(selectedImageSource);
+    }
+
+    // Event Listeners
+    document.querySelectorAll('#bodyTypeTags .option-card').forEach(tag => {
+        tag.addEventListener('click', function() {
+            activateTag('#bodyTypeTags', this.dataset.value);
+            selectedBodyType = this.dataset.value;
+            document.getElementById('selectedBodyType').value = selectedBodyType;
+        });
+    });
+
+    document.querySelectorAll('#styleTags .option-card').forEach(tag => {
+        tag.addEventListener('click', function() {
+            activateTag('#styleTags', this.dataset.value);
+            selectedStyle = this.dataset.value;
+            document.getElementById('selectedStyle').value = selectedStyle;
+        });
+    });
+
+    document.querySelectorAll('#colorTags .tag').forEach(tag => {
+        tag.addEventListener('click', function() {
+            activateTag('#colorTags', this.dataset.value);
+            selectedColor = this.dataset.value;
+            document.getElementById('selectedColor').value = selectedColor;
+        });
+    });
+
+    document.querySelectorAll('#imageSourceTags .tag').forEach(tag => {
+        tag.addEventListener('click', function() { applyImageSource(this.dataset.value); });
+    });
+
+    document.getElementById('imageInput')?.addEventListener('change', function(e) {
+        if (e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('previewImg').src = ev.target.result;
+                document.getElementById('imagePreview').style.display = 'flex';
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    document.getElementById('imageUrlInput')?.addEventListener('input', function() {
+        if (selectedImageSource === 'url') setPreview(this.value);
+    });
+
+    document.getElementById('fashionForm')?.addEventListener('submit', function(e) {
+        const name = document.getElementById('fashionName').value.trim();
+        const desc = document.getElementById('description').value.trim();
+        const imgInput = document.getElementById('imageInput');
+        const urlInput = document.getElementById('imageUrlInput');
+        const url = urlInput.value.trim();
+
+        if (!name) { alert('Nama fashion wajib diisi!'); e.preventDefault(); return; }
+        if (!selectedBodyType) { alert('Pilih body type!'); e.preventDefault(); return; }
+        if (!selectedStyle) { alert('Pilih style!'); e.preventDefault(); return; }
+        if (!desc) { alert('Deskripsi wajib diisi!'); e.preventDefault(); return; }
+        if (selectedImageSource === 'upload' && !imgInput.files[0]) { alert('Upload gambar!'); e.preventDefault(); return; }
+        if (selectedImageSource === 'url') {
+            if (!url) { alert('Isi URL gambar!'); e.preventDefault(); return; }
+            try { new URL(url); } catch(err) { alert('URL tidak valid!'); e.preventDefault(); return; }
+        }
+        if (storesArray.length === 0) { alert('Tambah minimal 1 toko!'); e.preventDefault(); return; }
+        document.getElementById('storesData').value = JSON.stringify(storesArray);
+    });
+
+    document.getElementById('searchInput')?.addEventListener('input', renderFashionGrid);
+
+    // Init
+    storesArray = parseStores(oldStoresPayload);
+    initTags();
     renderStoreList();
     updateStats();
     renderFashionGrid();
 
+    // Global
     window.addStore = addStore;
     window.removeStore = removeStore;
     window.removeImage = removeImage;
     window.editItem = editItem;
     window.deleteItem = deleteItem;
+    window.switchPage = switchPage;
+    window.toggleSidebar = toggleSidebar;
+    window.closeSidebar = closeSidebar;
 </script>
 @endpush
