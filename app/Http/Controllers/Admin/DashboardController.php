@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FashionCategory;
 use App\Models\FashionItem;
 use App\Models\FashionItemStore;
+use App\Models\SmartFitUsageLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -101,9 +102,13 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', [
             'fashionItemsPayload' => $fashionItemsPayload,
+            'recentSmartfitUsage' => SmartFitUsageLog::query()->latest()->limit(5)->get(),
+            'smartfitLabels' => config('smartfit.labels', []),
             'stats' => [
                 'total_items' => $fashionItemsPayload->count(),
                 'total_stores' => $totalStores,
+                'smartfit_usage' => SmartFitUsageLog::query()->count(),
+                'smartfit_usage_today' => SmartFitUsageLog::query()->whereDate('created_at', now()->toDateString())->count(),
             ],
         ]);
     }

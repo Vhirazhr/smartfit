@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExerciseController;
 use App\Http\Controllers\Admin\FashionCategoryController;
 use App\Http\Controllers\Admin\FashionItemController;
+use App\Http\Controllers\Admin\SmartFitAnalyticsController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BodyMeasurementController;
@@ -37,6 +38,7 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 Route::post('/admin/dashboard/fashion-items', [DashboardController::class, 'store'])->name('admin.dashboard.fashion-items.store');
 Route::post('/admin/dashboard/fashion-items/{id}/delete', [DashboardController::class, 'destroy'])->name('admin.dashboard.fashion-items.destroy');
+Route::get('/admin/smartfit-analytics', [SmartFitAnalyticsController::class, 'index'])->name('admin.smartfit-analytics.index');
 
 // ================== EXERCISE ADMIN ==================
 Route::get('/admin/exercise', [ExerciseController::class, 'index']);

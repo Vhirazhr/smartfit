@@ -30,6 +30,12 @@
                             Tambah Fashion
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.smartfit-analytics.index') }}">
+                            <i class="fas fa-chart-line"></i>
+                            SmartFIT Analytics
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -149,10 +155,10 @@
                                 <i class="fas fa-users"></i>
                             </div>
                         </div>
-                        <div class="analytics-card-value">124</div>
-                        <div class="analytics-card-label">Pengguna</div>
+                        <div class="analytics-card-value">{{ number_format($stats['smartfit_usage'] ?? 0) }}</div>
+                        <div class="analytics-card-label">SmartFIT Usage</div>
                         <div class="analytics-card-change positive">
-                            <i class="fas fa-arrow-up"></i> +12 bulan ini
+                            <i class="fas fa-calendar-day"></i> {{ number_format($stats['smartfit_usage_today'] ?? 0) }} hari ini
                         </div>
                     </div>
 
@@ -189,83 +195,45 @@
                         </div>
                     </div>
 
-                    {{-- Pengguna Terbaru --}}
+                    {{-- SmartFIT Usage Terbaru --}}
                     <div class="info-panel">
                         <div class="info-panel-header">
                             <h3>
-                                <i class="fas fa-users" style="color: #C5B09F;"></i> 
-                                Pengguna Terbaru
+                                <i class="fas fa-chart-line" style="color: #C5B09F;"></i>
+                                SmartFIT Terbaru
                             </h3>
                         </div>
                         <div class="info-panel-body" style="padding: 0;">
                             <table class="users-table">
                                 <thead>
                                     <tr>
-                                        <th>Pengguna</th>
-                                        <th>Status</th>
+                                        <th>Flow</th>
+                                        <th>Body Type</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="user-avatar-sm">A</div>
-                                                <div>
-                                                    <div class="user-name">Aisyah Putri</div>
-                                                    <div class="user-email">aisyah@email.com</div>
+                                    @forelse($recentSmartfitUsage as $usageLog)
+                                        <tr>
+                                            <td>
+                                                <div class="user-cell">
+                                                    <div class="user-avatar-sm">{{ strtoupper(substr($usageLog->flow_type, 0, 1)) }}</div>
+                                                    <div>
+                                                        <div class="user-name">{{ $usageLog->flow_label }}</div>
+                                                        <div class="user-email">{{ $usageLog->country_name ?: ($usageLog->country_code ?: 'Unknown country') }}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge new">Baru</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="user-avatar-sm">R</div>
-                                                <div>
-                                                    <div class="user-name">Rizky Pratama</div>
-                                                    <div class="user-email">rizky@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge active">Aktif</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="user-avatar-sm">S</div>
-                                                <div>
-                                                    <div class="user-name">Siti Nurhaliza</div>
-                                                    <div class="user-email">siti@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge active">Aktif</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="user-avatar-sm">D</div>
-                                                <div>
-                                                    <div class="user-name">Dewi Lestari</div>
-                                                    <div class="user-email">dewi@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge new">Baru</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="user-cell">
-                                                <div class="user-avatar-sm">B</div>
-                                                <div>
-                                                    <div class="user-name">Budi Santoso</div>
-                                                    <div class="user-email">budi@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="status-badge active">Aktif</span></td>
-                                    </tr>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge active">
+                                                    {{ $smartfitLabels[$usageLog->morphotype] ?? $usageLog->body_type ?? '-' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2" class="category-empty">Belum ada penggunaan SmartFIT.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>

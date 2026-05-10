@@ -145,4 +145,13 @@ return [
             'avoid' => ['One-size assumptions without fitting review'],
         ],
     ],
+
+    'analytics' => [
+        'geolocation' => [
+            'enabled' => env('SMARTFIT_GEOLOCATION_ENABLED', false),
+            'endpoint' => env('SMARTFIT_GEOLOCATION_ENDPOINT', 'https://ipapi.co/{ip}/json/'),
+            'timeout' => env('SMARTFIT_GEOLOCATION_TIMEOUT', 2),
+            'cache_ttl' => env('SMARTFIT_GEOLOCATION_CACHE_TTL', 86400),
+        ],
+    ],
 ];
