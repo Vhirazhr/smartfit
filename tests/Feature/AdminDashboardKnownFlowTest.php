@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\FashionCategory;
 use App\Models\FashionItem;
+use App\Models\SmartFitUsageLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -123,5 +124,62 @@ class AdminDashboardKnownFlowTest extends TestCase
             ->assertSee('Database Recommendation Dress')
             ->assertSee('Zalora')
             ->assertSee('https://example.com/db-look.jpg');
+    }
+
+    public function test_known_body_type_flow_is_logged_for_analytics(): void
+    {
+        $response = $this
+            ->withHeader('CF-IPCountry', 'MY')
+            ->post(route('known.get.recommendation'), [
+                'body_type' => 'Rectangle',
+                'style_preference' => 'Casual',
+                'color_tone' => 'Neutral',
+            ]);
+
+        $response->assertRedirect(route('known.result'));
+
+        $this->assertDatabaseHas('smartfit_usage_logs', [
+            'flow_type' => 'known',
+            'body_type' => 'Rectangle',
+            'morphotype' => 'rectangle',
+            'style_preference' => 'Casual',
+            'color_tone' => 'Neutral',
+            'country_code' => 'MY',
+            'country_name' => 'Malaysia',
+        ]);
+    }
+
+    public function test_admin_can_view_smartfit_analytics_dashboard(): void
+    {
+        SmartFitUsageLog::query()->create([
+            'flow_type' => SmartFitUsageLog::FLOW_CALCULATED,
+            'body_type' => 'Hourglass',
+            'morphotype' => 'hourglass',
+            'bust' => 100,
+            'waist' => 70,
+            'hip' => 95,
+            'country_code' => 'ID',
+            'country_name' => 'Indonesia',
+            'ip_address' => '103.10.20.30',
+        ]);
+
+        SmartFitUsageLog::query()->create([
+            'flow_type' => SmartFitUsageLog::FLOW_KNOWN,
+            'body_type' => 'Rectangle',
+            'morphotype' => 'rectangle',
+            'style_preference' => 'Formal',
+            'country_code' => 'ID',
+            'country_name' => 'Indonesia',
+            'ip_address' => '103.10.20.31',
+        ]);
+
+        $this->withSession(['admin' => true])
+            ->get(route('admin.smartfit-analytics.index'))
+            ->assertOk()
+            ->assertSee('SmartFIT Usage Analytics')
+            ->assertSee('Total Usage')
+            ->assertSee('Indonesia')
+            ->assertSee('103.***.***.30')
+            ->assertSee('Known Body Type');
     }
 }

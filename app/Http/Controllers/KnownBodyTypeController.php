@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\FashionItem;
 use App\Models\FashionItemStore;
 use App\Services\RecommendationService;
+use App\Services\SmartFitUsageLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class KnownBodyTypeController extends Controller
 {
-    public function __construct(private readonly RecommendationService $recommendationService) {}
+    public function __construct(
+        private readonly RecommendationService $recommendationService,
+        private readonly SmartFitUsageLogger $usageLogger
+    ) {}
 
     public function selectBodyType()
     {
@@ -32,11 +36,13 @@ class KnownBodyTypeController extends Controller
 
         $bodyType = (string) $request->body_type;
         $stylePreference = (string) $request->style_preference;
-        $colorTone = $request->color_tone ?? null;
+        $colorTone = $request->filled('color_tone') ? (string) $request->color_tone : null;
 
         $morphotype = $manualBodyTypes[$bodyType] ?? 'undefined';
         $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
         $recommendationData = $recommendationPayload['recommendations'] ?? [];
+
+        $usageLog = $this->usageLogger->recordKnown($request, $bodyType, $morphotype, $stylePreference, $colorTone);
 
         session([
             'body_type' => $bodyType,
@@ -52,6 +58,7 @@ class KnownBodyTypeController extends Controller
             'style_tip' => $this->getStyleTip($stylePreference),
             'color_tip' => $this->getColorTip((string) $colorTone),
             'source' => 'known',
+            'smartfit_usage_log_id' => $usageLog->id,
         ]);
 
         return redirect()->route('known.result');

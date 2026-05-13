@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\FashionCategory;
 use App\Models\FashionItem;
+use App\Models\SmartFitUsageLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,6 +18,8 @@ class SmartFitMeasurementFlowTest extends TestCase
             'bust' => 100,
             'waist' => 70,
             'hip' => 95,
+        ], [
+            'CF-IPCountry' => 'ID',
         ]);
 
         $response->assertRedirect(route('smartfit.result'));
@@ -29,6 +32,14 @@ class SmartFitMeasurementFlowTest extends TestCase
             'morphotype_label' => 'Hourglass',
             'measurement_standard' => 'ISO 8559-1',
             'source' => 'smartfit_web_wizard',
+        ]);
+
+        $this->assertDatabaseHas('smartfit_usage_logs', [
+            'flow_type' => 'calculated',
+            'body_type' => 'Hourglass',
+            'morphotype' => 'hourglass',
+            'country_code' => 'ID',
+            'country_name' => 'Indonesia',
         ]);
     }
 
@@ -49,8 +60,17 @@ class SmartFitMeasurementFlowTest extends TestCase
 
     public function test_it_updates_recommendation_after_style_preference_submission(): void
     {
+        $usageLog = SmartFitUsageLog::query()->create([
+            'flow_type' => SmartFitUsageLog::FLOW_CALCULATED,
+            'body_type' => 'Hourglass',
+            'morphotype' => 'hourglass',
+            'country_code' => 'ID',
+            'country_name' => 'Indonesia',
+        ]);
+
         $response = $this
             ->withSession([
+                'smartfit_usage_log_id' => $usageLog->id,
                 'body_type' => 'Hourglass',
                 'description' => 'Initial recommendation focus',
                 'recommendation_focus' => 'Initial recommendation focus',
@@ -72,6 +92,11 @@ class SmartFitMeasurementFlowTest extends TestCase
 
         $this->assertContains('Structured blazers', session('recommendation_tops', []));
         $this->assertContains('Tailored trousers', session('recommendation_bottoms', []));
+
+        $this->assertDatabaseHas('smartfit_usage_logs', [
+            'id' => $usageLog->id,
+            'style_preference' => 'Formal',
+        ]);
     }
 
     public function test_recommendation_page_shows_personalized_recommendation_showcase_when_style_is_selected(): void

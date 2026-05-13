@@ -9,6 +9,7 @@ use App\Models\FashionItem;
 use App\Models\FashionItemStore;
 use App\Services\MorphotypeService;
 use App\Services\RecommendationService;
+use App\Services\SmartFitUsageLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -17,7 +18,8 @@ class SmartFitController extends Controller
 {
     public function __construct(
         private readonly MorphotypeService $morphotypeService,
-        private readonly RecommendationService $recommendationService
+        private readonly RecommendationService $recommendationService,
+        private readonly SmartFitUsageLogger $usageLogger
     ) {}
 
     /**
@@ -61,7 +63,7 @@ class SmartFitController extends Controller
 
         $bodyType = $request->body_type;
         $stylePreference = $request->style_preference;
-        $colorTone = $request->color_tone;
+        $colorTone = $request->filled('color_tone') ? (string) $request->color_tone : null;
 
         $morphotype = $this->mapKnownBodyTypeToMorphotype($bodyType);
         $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
@@ -69,6 +71,8 @@ class SmartFitController extends Controller
         $recommendationData = $this->applyStylePreferenceToRecommendations($recommendationData, $stylePreference);
 
         $descriptionMap = config('smartfit.descriptions', []);
+
+        $usageLog = $this->usageLogger->recordKnown($request, $bodyType, $morphotype, $stylePreference, $colorTone);
 
         session([
             'body_type' => $bodyType,
@@ -84,6 +88,7 @@ class SmartFitController extends Controller
             'style_tip' => $this->getStyleTip($stylePreference),
             'color_tip' => $this->getColorTip((string) $colorTone),
             'source' => 'manual',
+            'smartfit_usage_log_id' => $usageLog->id,
         ]);
 
         return redirect()
@@ -141,8 +146,11 @@ class SmartFitController extends Controller
             'user_agent' => substr((string) $request->userAgent(), 0, 512),
         ]);
 
+        $usageLog = $this->usageLogger->recordCalculated($request, $measurement, $classification);
+
         session([
             'body_measurement_id' => $measurement->id,
+            'smartfit_usage_log_id' => $usageLog->id,
             'morphotype' => $classification['morphotype'],
             'body_type' => $classification['label'],
             'description' => $recommendationData['focus'] ?? 'Measurement profile ready for styling recommendations.',
@@ -245,6 +253,12 @@ class SmartFitController extends Controller
         $recommendationPayload = $this->recommendationService->forMorphotype($morphotype);
         $recommendationData = $recommendationPayload['recommendations'] ?? [];
         $recommendationData = $this->applyStylePreferenceToRecommendations($recommendationData, $stylePreference);
+
+        $this->usageLogger->updateStylePreference(
+            session('smartfit_usage_log_id') !== null ? (int) session('smartfit_usage_log_id') : null,
+            $stylePreference,
+            session('color_tone') !== null ? (string) session('color_tone') : null
+        );
 
         session([
             'style_preference' => $stylePreference,

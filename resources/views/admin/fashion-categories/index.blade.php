@@ -4,44 +4,7 @@
 
 @section('content')
 <div class="admin-wrapper">
-    <aside class="admin-sidebar">
-        <div class="sidebar-brand">
-            <h2>SMARTfit</h2>
-            <span>Admin Panel</span>
-        </div>
-
-        <nav class="sidebar-nav">
-            <div class="sidebar-section">
-                <p class="sidebar-section-title">Menu Utama</p>
-                <ul class="sidebar-menu">
-                    <li>
-                        <a href="{{ route('admin.dashboard') }}">
-                            <i class="fas fa-chart-pie"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <p class="sidebar-section-title">Manajemen Data</p>
-                <ul class="sidebar-menu">
-                    <li>
-                        <a href="{{ route('admin.fashion-categories.index') }}" class="active">
-                            <i class="fas fa-tags"></i>
-                            Kategori
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin.fashion-items.index') }}">
-                            <i class="fas fa-tshirt"></i>
-                            Semua Fashion
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </aside>
+    @include('admin.partials.sidebar', ['active' => 'fashion-categories'])
 
     <main class="admin-main">
         <div class="top-bar">
