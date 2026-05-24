@@ -18,11 +18,19 @@ class AdminDashboardKnownFlowTest extends TestCase
     {
         Storage::fake('public');
 
+        $category = FashionCategory::query()->create([
+            'name' => 'Formal',
+            'slug' => 'formal',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
         $response = $this->withSession(['admin' => true])
             ->post(route('admin.dashboard.fashion-items.store'), [
                 'title' => 'Structured Workwear Set',
+                'fashion_category_id' => $category->id,
                 'body_type' => 'hourglass',
-                'style_preference' => 'formal',
+                'style_preference' => 'casual',
                 'color_tone' => 'neutral',
                 'description' => 'Formal set with strong silhouette lines.',
                 'image_source' => 'upload',
@@ -38,6 +46,7 @@ class AdminDashboardKnownFlowTest extends TestCase
         $item = FashionItem::query()->with('stores')->first();
 
         $this->assertNotNull($item);
+        $this->assertSame($category->id, $item->fashion_category_id);
         $this->assertSame('formal', $item->style_preference);
         $this->assertSame('neutral', $item->color_tone);
         $this->assertSame('https://example.com/zalora-item', $item->purchase_link);
@@ -58,9 +67,17 @@ class AdminDashboardKnownFlowTest extends TestCase
 
     public function test_admin_dashboard_can_store_fashion_item_with_image_url(): void
     {
+        $category = FashionCategory::query()->create([
+            'name' => 'Casual',
+            'slug' => 'casual',
+            'is_active' => true,
+            'sort_order' => 0,
+        ]);
+
         $response = $this->withSession(['admin' => true])
             ->post(route('admin.dashboard.fashion-items.store'), [
                 'title' => 'Summer Linen Top',
+                'fashion_category_id' => $category->id,
                 'body_type' => 'hourglass',
                 'style_preference' => 'casual',
                 'color_tone' => 'light',
@@ -77,6 +94,7 @@ class AdminDashboardKnownFlowTest extends TestCase
         $item = FashionItem::query()->latest('id')->first();
 
         $this->assertNotNull($item);
+        $this->assertSame($category->id, $item->fashion_category_id);
         $this->assertSame('url', $item->image_source);
         $this->assertSame('https://images.example.com/look.jpg', $item->image_url);
         $this->assertNull($item->image_path);

@@ -314,30 +314,21 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Style <span class="required">*</span></label>
+                                <label>Style / Kategori <span class="required">*</span></label>
                                 <input type="hidden" id="selectedColor" name="color_tone" value="">
                                 <div class="option-grid" id="styleTags">
-    <div class="option-card" data-value="casual">
-        <div class="icon">👕</div>
-        Casual
-    </div>
-    <div class="option-card" data-value="formal">
-        <div class="icon">👔</div>
-        Formal
-    </div>
-    <div class="option-card" data-value="sporty">
-        <div class="icon">🏃</div>
-        Sporty
-    </div>
-    <div class="option-card" data-value="classic">
-        <div class="icon">🕰️</div>
-        Classic
-    </div>
-    <div class="option-card" data-value="bohemian">
-        <div class="icon">🌿</div>
-        Bohemian
-    </div>
+    @forelse(($dashboardCategories ?? collect()) as $category)
+        <div class="option-card" data-value="{{ $category->slug }}" data-category-id="{{ $category->id }}">
+            <div class="icon"><i class="fas fa-tag"></i></div>
+            {{ $category->name }}
+        </div>
+    @empty
+        <div class="empty-stores" style="grid-column: 1 / -1;">
+            <p>Belum ada kategori aktif. Tambahkan kategori terlebih dahulu.</p>
+        </div>
+    @endforelse
 </div>
+                                <input type="hidden" id="selectedCategory" name="fashion_category_id" value="{{ old('fashion_category_id') }}">
                                 <input type="hidden" id="selectedStyle" name="style_preference" value="{{ old('style_preference') }}">
                             </div>
 
@@ -378,6 +369,11 @@
 <script id="dashboardInitialData" type="application/json">
 {!! json_encode([
     'fashionItems' => ($fashionItemsPayload ?? collect())->values()->all(),
+    'categories' => ($dashboardCategories ?? collect())->map(fn ($category) => [
+        'id' => $category->id,
+        'slug' => $category->slug,
+        'name' => $category->name,
+    ])->values()->all(),
     'oldStoresPayload' => old('stores_payload', '[]'),
     'deleteEndpointTemplate' => route('admin.dashboard.fashion-items.destroy', ['id' => '__ID__']),
 ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
@@ -385,11 +381,13 @@
 <script>
     const initialData = JSON.parse(document.getElementById('dashboardInitialData').textContent || '{}');
     const initialFashionItems = Array.isArray(initialData.fashionItems) ? initialData.fashionItems : [];
+    const dashboardCategories = Array.isArray(initialData.categories) ? initialData.categories : [];
     const oldStoresPayload = initialData.oldStoresPayload || '[]';
     const deleteEndpointTemplate = String(initialData.deleteEndpointTemplate || '');
 
     let fashionItems = [...initialFashionItems];
     let selectedBodyType = '';
+    let selectedCategoryId = '';
     let selectedStyle = '';
     let selectedColor = '';
     let selectedImageSource = 'upload';
@@ -400,9 +398,15 @@
         triangle: '▼ Triangle', inverted: '▲ Inverted', inverted_triangle: '▲ Inverted Triangle',
         y_shape: '▲ Y', u: '⬭ U', inverted_u: '⇵ Inverted U', diamond: '◆ Diamond',
     };
+    const categoryLabelMap = dashboardCategories.reduce((map, category) => {
+        const slug = String(category?.slug ?? '').trim();
+        if (slug) map[slug] = String(category?.name ?? slug);
+        return map;
+    }, {});
     const styleLabelMap = {
         casual: '👕 Casual', formal: '👔 Formal', sporty: '🏃 Sporty',
         classic: '🕰️ Classic', bohemian: '🌿 Bohemian',
+        ...categoryLabelMap,
     };
     const colorLabelMap = {
         light: '☀️ Light', bright: '🌈 Bright', neutral: '⚪ Neutral',
@@ -468,6 +472,10 @@
         document.querySelectorAll(selector + ' .tag, ' + selector + ' .option-card').forEach(t => t.classList.toggle('active', t.dataset.value === value));
     }
 
+    function activateCategoryTag(categoryId) {
+        document.querySelectorAll('#styleTags .option-card').forEach(t => t.classList.toggle('active', String(t.dataset.categoryId || '') === String(categoryId)));
+    }
+
     function parseStores(raw) {
         let arr = [];
         if (Array.isArray(raw)) arr = raw;
@@ -498,7 +506,7 @@
         const filtered = fashionItems.filter(item => {
             const name = String(item.name ?? '').toLowerCase();
             const body = String(bodyLabelMap[item.bodyType] || item.bodyTypeLabel || '').toLowerCase();
-            const style = String(styleLabelMap[item.style] || item.styleLabel || '').toLowerCase();
+            const style = String(item.styleLabel || styleLabelMap[item.style] || '').toLowerCase();
             return name.includes(term) || body.includes(term) || style.includes(term);
         });
 
@@ -525,7 +533,7 @@
                         <h3>${escapeHtml(item.name)}</h3>
                         <div class="card-tags">
                             <span class="tag-badge body">${escapeHtml(bodyLabelMap[item.bodyType] || item.bodyTypeLabel || item.bodyType || '')}</span>
-                            <span class="tag-badge style">${escapeHtml(styleLabelMap[item.style] || item.styleLabel || item.style || '')}</span>
+                            <span class="tag-badge style">${escapeHtml(item.styleLabel || styleLabelMap[item.style] || item.style || '')}</span>
                             <span class="tag-badge color">${escapeHtml(colorLabelMap[item.color] || item.colorLabel || 'Neutral')}</span>
                         </div>
                         <p class="card-desc">${escapeHtml(trimmed)}</p>
@@ -588,18 +596,21 @@
     // ===== INITIALIZATION =====
     function initTags() {
         const bType = document.getElementById('selectedBodyType');
+        const category = document.getElementById('selectedCategory');
         const style = document.getElementById('selectedStyle');
         const color = document.getElementById('selectedColor');
         const imgSrc = document.getElementById('selectedImageSource');
 
         selectedBodyType = String(bType?.value || '').trim();
+        selectedCategoryId = String(category?.value || '').trim();
         selectedStyle = String(style?.value || '').trim();
         selectedColor = String(color?.value || '').trim();
         selectedImageSource = normalizeSource(String(imgSrc?.value || 'upload').trim());
 
         const uiBT = selectedBodyType === 'inverted_triangle' ? 'inverted' : selectedBodyType;
         if (uiBT) activateTag('#bodyTypeTags', uiBT);
-        if (selectedStyle) activateTag('#styleTags', selectedStyle);
+        if (selectedCategoryId) activateCategoryTag(selectedCategoryId);
+        else if (selectedStyle) activateTag('#styleTags', selectedStyle);
         if (selectedColor) activateTag('#colorTags', selectedColor);
         applyImageSource(selectedImageSource);
     }
@@ -615,8 +626,10 @@
 
     document.querySelectorAll('#styleTags .option-card').forEach(tag => {
         tag.addEventListener('click', function() {
-            activateTag('#styleTags', this.dataset.value);
-            selectedStyle = this.dataset.value;
+            selectedCategoryId = String(this.dataset.categoryId || '');
+            selectedStyle = String(this.dataset.value || '');
+            activateCategoryTag(selectedCategoryId);
+            document.getElementById('selectedCategory').value = selectedCategoryId;
             document.getElementById('selectedStyle').value = selectedStyle;
         });
     });
@@ -657,7 +670,7 @@
 
         if (!name) { alert('Nama fashion wajib diisi!'); e.preventDefault(); return; }
         if (!selectedBodyType) { alert('Pilih body type!'); e.preventDefault(); return; }
-        if (!selectedStyle) { alert('Pilih style!'); e.preventDefault(); return; }
+        if (!selectedCategoryId) { alert('Pilih kategori/style!'); e.preventDefault(); return; }
         if (!desc) { alert('Deskripsi wajib diisi!'); e.preventDefault(); return; }
         if (selectedImageSource === 'upload' && !imgInput.files[0]) { alert('Upload gambar!'); e.preventDefault(); return; }
         if (selectedImageSource === 'url') {
