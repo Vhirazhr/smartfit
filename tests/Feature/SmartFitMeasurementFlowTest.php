@@ -139,6 +139,9 @@ class SmartFitMeasurementFlowTest extends TestCase
             ->assertOk()
             ->assertSee('Your Personalized Recommendations')
             ->assertSee('Database Casual Hourglass Look')
-            ->assertSee('Styling Tips for Hourglass');
+            ->assertSee('Styling Tips for Hourglass')
+            ->assertSee('smartfitRecommendedItemsData')
+            ->assertSee('changeMainImage')
+            ->assertSee('selectProduct');
     }
 }

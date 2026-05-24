@@ -3,8 +3,8 @@
 @section('title', 'SMARTfit - Personalized Recommendation')
 
 @section('content')
-<section class="smartfit-recommendation-page">
-    <div class="smartfit-recommendation-container">
+<section class="result-known">
+    <div class="result-known-container">
         <div class="progress-indicator">
             <div class="progress-step completed">
                 <span class="step-number">1</span>
@@ -22,12 +22,14 @@
             </div>
         </div>
 
-        <div class="recommendation-page-header">
-            <div class="recommendation-page-icon"><i class="fa-solid fa-magic"></i></div>
-            <h1>Your <span>Personalized</span> Recommendations</h1>
-            <p>
-                Based on your <strong>{{ $bodyType }}</strong> body type and
-                <strong>{{ $stylePreference }}</strong> style preference.
+        <div class="result-header">
+            <div class="result-icon">
+                <i class="fas fa-magic"></i>
+            </div>
+            <h1 class="result-title">Your <span>Personalized</span> Recommendations</h1>
+            <p class="result-subtitle">
+                Based on your <strong>{{ $bodyType }}</strong> body type
+                and <strong>{{ $stylePreference }}</strong> style preference
             </p>
         </div>
 
@@ -38,110 +40,31 @@
             </div>
         @endif
 
-        @php
-            $mainProduct = $systemRecommendation['main_product'];
-            $otherProducts = $systemRecommendation['other_products'];
-            $mainShopUrl = $mainProduct['shop_url'] ?? null;
-        @endphp
+        <div class="product-detail-container" id="productDetailContainer"></div>
 
-        <article class="recommendation-main-card">
-            <div class="recommendation-main-image">
-                <img
-                    src="{{ $mainProduct['main_image'] }}"
-                    alt="{{ $mainProduct['name'] }}"
-                    onerror="this.onerror=null;this.src='https://placehold.co/900x700/f5f0eb/1b1b1b?text=Image+Not+Found';"
-                >
-            </div>
-            <div class="recommendation-main-info">
-                <span class="recommendation-shop"><i class="fa-solid fa-store"></i>{{ $mainProduct['shop'] }}</span>
-                <h2>{{ $mainProduct['name'] }}</h2>
-                <p>{{ $mainProduct['description'] }}</p>
-                @if(!empty($mainProduct['price']))
-                    <div class="recommendation-price">{{ $mainProduct['price'] }}</div>
-                @endif
-
-                @if(!empty($mainProduct['detail_images']))
-                    <div class="recommendation-detail-images">
-                        <span>Detail Images</span>
-                        <div class="recommendation-thumb-row">
-                            @foreach($mainProduct['detail_images'] as $detailImage)
-                                <div class="recommendation-thumb">
-                                    <img
-                                        src="{{ $detailImage }}"
-                                        alt="Detail {{ $mainProduct['name'] }}"
-                                        onerror="this.onerror=null;this.src='https://placehold.co/240x240/f5f0eb/1b1b1b?text=Detail';"
-                                    >
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
-                @if($mainShopUrl)
-                    <a href="{{ $mainShopUrl }}" target="_blank" rel="noopener" class="recommendation-shop-btn">
-                        Shop Now <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                @else
-                    <span class="recommendation-shop-btn" style="opacity:.6; pointer-events:none;">Store Link Unavailable</span>
-                @endif
-            </div>
-        </article>
-
-        <section class="recommendation-also-like" aria-label="You may also like">
-            <div class="recommendation-divider-title">
-                <span></span>
+        <div class="also-like-section">
+            <div class="also-like-header">
+                <span class="also-like-line"></span>
                 <h3>You May Also Like</h3>
-                <span></span>
+                <span class="also-like-line"></span>
             </div>
+            <div class="also-like-grid" id="alsoLikeGrid"></div>
+        </div>
 
-            @if(!empty($otherProducts))
-                <div class="recommendation-other-grid">
-                    @foreach($otherProducts as $other)
-                        <article class="recommendation-other-card">
-                            <div class="recommendation-other-image">
-                                <img
-                                    src="{{ $other['main_image'] }}"
-                                    alt="{{ $other['name'] }}"
-                                    onerror="this.onerror=null;this.src='https://placehold.co/460x360/f5f0eb/1b1b1b?text=Image';"
-                                >
-                            </div>
-                            <h4>{{ $other['name'] }}</h4>
-                            @if(!empty($other['price']))
-                                <p>{{ $other['price'] }} - {{ $other['shop'] }}</p>
-                            @else
-                                <p>{{ $other['shop'] }}</p>
-                            @endif
-                        </article>
-                    @endforeach
-                </div>
-            @else
-                <p class="recommendation-empty">More recommendations coming soon!</p>
-            @endif
-        </section>
+        <div class="tips-section">
+            <h3><i class="fas fa-lightbulb"></i> Styling Tips for {{ $bodyType }}</h3>
+            <div class="tips-grid" id="tipsGrid"></div>
+        </div>
 
-        @if(!empty($systemRecommendation['tips']))
-            <section class="recommendation-tips" aria-label="Styling tips">
-                <h3><i class="fa-solid fa-lightbulb"></i> Styling Tips for {{ $bodyType }}</h3>
-                <div class="recommendation-tip-grid">
-                    @foreach($systemRecommendation['tips'] as $tip)
-                        <article class="recommendation-tip-card">
-                            <i class="{{ $tip['icon'] }}"></i>
-                            <p>{{ $tip['text'] }}</p>
-                        </article>
-                    @endforeach
-                </div>
-            </section>
-        @endif
-
-        <div class="recommendation-actions">
+        <div class="result-actions">
             <a href="{{ route('smartfit.result') }}" class="btn-back">
-                <i class="fa-solid fa-arrow-left"></i> Back to Style
+                <i class="fas fa-arrow-left"></i> Back to Style
             </a>
             <a href="{{ route('gallery') }}" class="btn-gallery">
-                <i class="fa-solid fa-images"></i> View Gallery
+                <i class="fas fa-images"></i> View Gallery
             </a>
             <a href="{{ route('smartfit.start') }}" class="btn-restart">
-                <i class="fa-solid fa-undo-alt"></i> Start Over
+                <i class="fas fa-undo-alt"></i> Start Over
             </a>
         </div>
     </div>
@@ -149,5 +72,133 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/smartfit-recommendation.css') }}">
+<link rel="stylesheet" href="{{ asset('css/result-known.css') }}">
+@endpush
+
+@push('scripts')
+<script id="smartfitRecommendedItemsData" type="application/json">{!! json_encode($recommendedItems ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+<script id="smartfitStylingTipsData" type="application/json">{!! json_encode($stylingTips ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+<script>
+const recommendedItems = JSON.parse(document.getElementById('smartfitRecommendedItemsData').textContent || '[]');
+const stylingTips = JSON.parse(document.getElementById('smartfitStylingTipsData').textContent || '[]');
+let currentProductIndex = 0;
+
+function getProducts() {
+    return Array.isArray(recommendedItems) ? recommendedItems : [];
+}
+
+function renderMainProduct() {
+    const container = document.getElementById('productDetailContainer');
+    const products = getProducts();
+
+    if (products.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-tshirt"></i><p>No recommendations yet.</p></div>`;
+        return;
+    }
+
+    const product = products[currentProductIndex];
+    const detailImages = Array.isArray(product.detail_images) && product.detail_images.length > 0
+        ? product.detail_images
+        : [product.main_image];
+    const hasShopLink = Boolean(product.shopUrl);
+    const storeList = Array.isArray(product.stores)
+        ? product.stores.map((store) => store.name).filter(Boolean).join(', ')
+        : '';
+    const priceMarkup = product.price !== undefined && product.price !== null
+        ? `<div class="product-detail-price">$${Number(product.price).toFixed(2)}</div>`
+        : '';
+    const buttonMarkup = hasShopLink
+        ? `<a href="${product.shopUrl}" target="_blank" rel="noopener" class="product-detail-btn">Shop Now <i class="fas fa-arrow-right"></i></a>`
+        : '<span class="product-detail-btn" style="opacity:.6; pointer-events:none;">Store Link Unavailable</span>';
+
+    container.innerHTML = `
+        <div class="product-detail">
+            <div class="product-detail-image">
+                <img id="mainProductImage" src="${product.main_image}"
+                     alt="${product.name}"
+                     onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=Image+Not+Found'">
+            </div>
+            <div class="product-detail-info">
+                <div class="product-detail-shop"><i class="fas fa-store"></i><span>${product.shop}${storeList ? ` - ${storeList}` : ''}</span></div>
+                <h2 class="product-detail-name">${product.name}</h2>
+                <p class="product-detail-description">${product.description}</p>
+                ${priceMarkup}
+                <div class="product-detail-images">
+                    <span class="detail-label">DETAIL IMAGES</span>
+                    <div class="detail-thumbnails">
+                        ${detailImages.map((img, idx) => {
+                            const safeImg = String(img).replace(/'/g, "\\'");
+                            return `
+                                <div class="detail-thumb ${idx === 0 ? 'active' : ''}" onclick="changeMainImage('${safeImg}', this)">
+                                    <img src="${img}" alt="Detail ${idx + 1}">
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                ${buttonMarkup}
+            </div>
+        </div>
+    `;
+}
+
+function changeMainImage(imageUrl, element) {
+    const mainImage = document.getElementById('mainProductImage');
+    if (mainImage) mainImage.src = imageUrl;
+    document.querySelectorAll('.detail-thumb').forEach(thumb => thumb.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function renderAlsoLike() {
+    const container = document.getElementById('alsoLikeGrid');
+    const products = getProducts();
+    const otherProducts = products.filter((_, index) => index !== currentProductIndex);
+
+    if (otherProducts.length === 0) {
+        container.innerHTML = `<div class="also-like-empty"><p>More recommendations coming soon!</p></div>`;
+        return;
+    }
+
+    container.innerHTML = otherProducts.map(product => `
+        <div class="also-like-card" onclick="selectProduct(${product.id})">
+            <div class="also-like-image"><img src="${product.main_image}" alt="${product.name}" onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=Image+Not+Found'"></div>
+            <div class="also-like-info">
+                <h4>${product.name}</h4>
+                ${product.price !== undefined && product.price !== null ? `<p>$${Number(product.price).toFixed(2)}</p>` : ''}
+                <span class="also-like-shop">${product.shop || 'Marketplace'}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectProduct(productId) {
+    const products = getProducts();
+    const newIndex = products.findIndex(p => p.id === productId);
+    if (newIndex !== -1) {
+        currentProductIndex = newIndex;
+        renderMainProduct();
+        renderAlsoLike();
+        window.scrollTo({ top: 350, behavior: 'smooth' });
+    }
+}
+
+function renderTips() {
+    const tipsGrid = document.getElementById('tipsGrid');
+    const tips = Array.isArray(stylingTips) ? stylingTips : [];
+
+    if (tips.length === 0) {
+        tipsGrid.innerHTML = '<div class="tip-card"><i class="fas fa-lightbulb"></i><p>Styling tips will appear once recommendations are available.</p></div>';
+        return;
+    }
+
+    tipsGrid.innerHTML = tips.map((tip) => `<div class="tip-card"><i class="${tip.icon}"></i><p>${tip.tip}</p></div>`).join('');
+}
+
+renderMainProduct();
+renderAlsoLike();
+renderTips();
+
+window.changeMainImage = changeMainImage;
+window.selectProduct = selectProduct;
+</script>
 @endpush

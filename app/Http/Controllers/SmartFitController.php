@@ -233,7 +233,8 @@ class SmartFitController extends Controller
         return view('smartfit.recommendation', [
             'bodyType' => $bodyType,
             'stylePreference' => session('style_preference'),
-            'systemRecommendation' => $systemRecommendation,
+            'recommendedItems' => $systemRecommendation['recommended_items'],
+            'stylingTips' => $systemRecommendation['tips'],
         ]);
     }
 
@@ -386,8 +387,7 @@ class SmartFitController extends Controller
             ->all();
 
         return [
-            'main_product' => $products[0],
-            'other_products' => array_slice($products, 1),
+            'recommended_items' => $products,
             'tips' => $this->buildSystemRecommendationTips($morphotype),
             'style_key' => $styleKey,
             'body_key' => $morphotype,
@@ -476,7 +476,7 @@ class SmartFitController extends Controller
             'detail_images' => [$item->display_image_url],
             'price' => null,
             'shop' => $primaryStore['name'] ?? 'Marketplace',
-            'shop_url' => $primaryStore['link'] ?? $item->purchase_link,
+            'shopUrl' => $primaryStore['link'] ?? $item->purchase_link,
             'stores' => $stores,
         ];
     }
@@ -492,7 +492,7 @@ class SmartFitController extends Controller
         if ($styleTip !== '') {
             $tips[] = [
                 'icon' => 'fa-solid fa-wand-magic-sparkles',
-                'text' => $styleTip,
+                'tip' => $styleTip,
             ];
         }
 
@@ -500,28 +500,28 @@ class SmartFitController extends Controller
         if ($focus !== '') {
             $tips[] = [
                 'icon' => 'fa-solid fa-bullseye',
-                'text' => $focus,
+                'tip' => $focus,
             ];
         }
 
         foreach (array_slice($recommendationData['tops'] ?? [], 0, 2) as $topTip) {
             $tips[] = [
                 'icon' => 'fa-solid fa-shirt',
-                'text' => $topTip,
+                'tip' => $topTip,
             ];
         }
 
         foreach (array_slice($recommendationData['bottoms'] ?? [], 0, 2) as $bottomTip) {
             $tips[] = [
                 'icon' => 'fa-solid fa-shoe-prints',
-                'text' => $bottomTip,
+                'tip' => $bottomTip,
             ];
         }
 
         if (empty($tips)) {
             $tips[] = [
                 'icon' => 'fa-solid fa-lightbulb',
-                'text' => 'Choose pieces that keep your silhouette balanced and comfortable.',
+                'tip' => 'Choose pieces that keep your silhouette balanced and comfortable.',
             ];
         }
 
