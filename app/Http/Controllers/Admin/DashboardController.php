@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -54,10 +55,17 @@ class DashboardController extends Controller
             ->ordered()
             ->get();
 
+        $dashboardCategories = FashionCategory::query()
+            ->active()
+            ->ordered()
+            ->get(['id', 'name', 'slug']);
+
         $fashionItemsPayload = $items
             ->map(function (FashionItem $item) use ($labels): array {
                 $styleKey = $this->resolveStyleKey($item);
                 $colorKey = $this->resolveColorKey($item->color_tone);
+                $categorySlug = (string) ($item->category?->slug ?? '');
+                $categoryName = (string) ($item->category?->name ?? '');
 
                 $stores = $item->stores
                     ->map(fn (FashionItemStore $store): array => [
@@ -82,8 +90,11 @@ class DashboardController extends Controller
                     'name' => $item->title,
                     'bodyType' => $item->body_type,
                     'bodyTypeLabel' => $bodyLabel,
-                    'style' => $styleKey,
-                    'styleLabel' => self::STYLE_LABELS[$styleKey] ?? Str::title($styleKey),
+                    'categoryId' => $item->fashion_category_id,
+                    'category' => $categorySlug,
+                    'categoryLabel' => $categoryName,
+                    'style' => $categorySlug !== '' ? $categorySlug : $styleKey,
+                    'styleLabel' => $categoryName !== '' ? $categoryName : (self::STYLE_LABELS[$styleKey] ?? Str::title($styleKey)),
                     'color' => $colorKey,
                     'colorLabel' => self::COLOR_LABELS[$colorKey] ?? self::COLOR_LABELS['neutral'],
                     'description' => (string) ($item->description ?? ''),
@@ -102,6 +113,7 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', [
             'fashionItemsPayload' => $fashionItemsPayload,
+            'dashboardCategories' => $dashboardCategories,
             'recentSmartfitUsage' => SmartFitUsageLog::query()->latest()->limit(5)->get(),
             'smartfitLabels' => config('smartfit.labels', []),
             'stats' => [
@@ -116,7 +128,6 @@ class DashboardController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $normalizedBodyType = $this->normalizeBodyType((string) $request->input('body_type', ''));
-        $normalizedStylePreference = $this->normalizeStylePreference((string) $request->input('style_preference', ''));
         $normalizedColorTone = $this->normalizeColorTone((string) $request->input('color_tone', ''));
         $normalizedImageSource = $this->normalizeImageSource((string) $request->input('image_source', 'upload'));
         $normalizedImageUrl = $this->normalizeImageUrl((string) $request->input('image_url', ''));
@@ -124,7 +135,6 @@ class DashboardController extends Controller
 
         $request->merge([
             'body_type' => $normalizedBodyType,
-            'style_preference' => $normalizedStylePreference,
             'color_tone' => $normalizedColorTone,
             'image_source' => $normalizedImageSource,
             'image_url' => $normalizedImageUrl,
@@ -133,8 +143,8 @@ class DashboardController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:150'],
+            'fashion_category_id' => ['required', 'integer', Rule::exists('fashion_categories', 'id')->where('is_active', true)],
             'body_type' => ['required', 'in:'.implode(',', config('smartfit.body_types', []))],
-            'style_preference' => ['required', 'in:'.implode(',', array_keys(self::STYLE_LABELS))],
             'color_tone' => ['nullable', 'in:'.implode(',', array_keys(self::COLOR_LABELS))],
             'description' => ['required', 'string'],
             'image_source' => ['required', 'in:upload,url'],
@@ -144,13 +154,16 @@ class DashboardController extends Controller
             'stores.*.name' => ['required', 'string', 'max:120'],
             'stores.*.link' => ['nullable', 'url', 'max:2048'],
         ], [
+            'fashion_category_id.required' => 'Pilih kategori fashion terlebih dahulu.',
+            'fashion_category_id.exists' => 'Kategori fashion yang dipilih tidak valid.',
             'stores.required' => 'Tambahkan minimal satu toko penyedia.',
             'stores.min' => 'Tambahkan minimal satu toko penyedia.',
             'image_file.required_if' => 'Upload gambar wajib diisi saat sumber gambar adalah Image Upload.',
             'image_url.required_if' => 'Link gambar wajib diisi saat sumber gambar adalah Image URL.',
         ]);
 
-        $category = $this->resolveCategoryFromStyle($validated['style_preference']);
+        $category = FashionCategory::query()->findOrFail((int) $validated['fashion_category_id']);
+        $stylePreference = $this->resolveStylePreferenceFromCategory($category);
         $imagePath = null;
         $imageUrl = null;
 
@@ -172,7 +185,7 @@ class DashboardController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'body_type' => $validated['body_type'],
-            'style_preference' => $validated['style_preference'],
+            'style_preference' => $stylePreference,
             'color_tone' => $validated['color_tone'] ?? null,
             'image_source' => $validated['image_source'],
             'image_path' => $imagePath,
@@ -252,6 +265,13 @@ class DashboardController extends Controller
         return strtolower(str_replace(['-', ' '], '_', trim($stylePreference)));
     }
 
+    private function resolveStylePreferenceFromCategory(FashionCategory $category): string
+    {
+        $normalized = $this->normalizeStylePreference((string) $category->slug);
+
+        return Str::limit($normalized, 50, '');
+    }
+
     private function normalizeColorTone(string $colorTone): ?string
     {
         $normalized = strtolower(str_replace(['-', ' '], '_', trim($colorTone)));
@@ -275,32 +295,6 @@ class DashboardController extends Controller
         $normalized = trim($imageUrl);
 
         return $normalized === '' ? null : $normalized;
-    }
-
-    private function resolveCategoryFromStyle(string $stylePreference): FashionCategory
-    {
-        $categoryMap = [
-            'casual' => ['name' => 'Casual', 'slug' => 'casual', 'sort_order' => 2],
-            'formal' => ['name' => 'Formal', 'slug' => 'formal', 'sort_order' => 1],
-            'sporty' => ['name' => 'Sporty', 'slug' => 'sporty', 'sort_order' => 5],
-            'classic' => ['name' => 'Classic', 'slug' => 'classic', 'sort_order' => 6],
-            'bohemian' => ['name' => 'Bohemian', 'slug' => 'bohemian', 'sort_order' => 7],
-        ];
-
-        $selected = $categoryMap[$stylePreference] ?? [
-            'name' => Str::title(str_replace('_', ' ', $stylePreference)),
-            'slug' => Str::slug($stylePreference),
-            'sort_order' => 10,
-        ];
-
-        return FashionCategory::query()->updateOrCreate(
-            ['slug' => $selected['slug']],
-            [
-                'name' => $selected['name'],
-                'is_active' => true,
-                'sort_order' => $selected['sort_order'],
-            ]
-        );
     }
 
     private function resolveStyleKey(FashionItem $item): string
