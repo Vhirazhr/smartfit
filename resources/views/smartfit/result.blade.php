@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app_nonavbar')
 
 @section('title', 'SMARTfit - Measurement Result')
 
