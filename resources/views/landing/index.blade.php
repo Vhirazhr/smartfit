@@ -98,6 +98,43 @@
                 }
             });
         }
+        const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+const homeLink = document.querySelector('.nav-links a[href="{{ route('landing') }}"]');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        const sectionHeight = section.offsetHeight;
+
+        if (
+            window.scrollY >= sectionTop &&
+            window.scrollY < sectionTop + sectionHeight
+        ) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    // hapus active dari semua menu
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // kalau masih di atas halaman, Home aktif
+    if (window.scrollY < 300) {
+        homeLink?.classList.add('active');
+        return;
+    }
+
+    // aktifkan menu section yang sedang dibuka
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+});
     });
 </script>
 @endpush
