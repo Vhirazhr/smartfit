@@ -14,7 +14,8 @@ class LandingController extends Controller
         $galleryItems = FashionItem::query()
             ->with('category')
             ->active()
-            ->take(8)
+            ->ordered()
+            ->take(60)
             ->get()
             ->map(function ($item) use ($labels) {
                 return [
