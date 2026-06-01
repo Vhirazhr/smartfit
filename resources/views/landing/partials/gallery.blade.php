@@ -30,6 +30,7 @@
                                 src="{{ $item['image_url'] }}"
                                 alt="{{ $item['title'] }}"
                                 loading="lazy"
+                                onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=No+Image'"
                             >
 
                             <div class="gallery-overlay">
@@ -57,6 +58,7 @@
                                 src="{{ $item['image_url'] }}"
                                 alt="{{ $item['title'] }}"
                                 loading="lazy"
+                                onerror="this.src='https://placehold.co/600x800/f5f0ed/1B1B1B?text=No+Image'"
                             >
 
                             <div class="gallery-overlay">
