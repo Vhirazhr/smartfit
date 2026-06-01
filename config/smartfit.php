@@ -59,11 +59,11 @@ return [
 
     'labels' => [
         'hourglass' => 'Hourglass',
-        'y_shape' => 'Y',
+        'y_shape' => 'Y Shape',
         'inverted_triangle' => 'Inverted Triangle',
         'spoon' => 'Spoon',
         'rectangle' => 'Rectangle',
-        'u' => 'U',
+        'u' => 'U Shape',
         'triangle' => 'Triangle',
         'inverted_u' => 'Inverted U',
         'diamond' => 'Diamond',
