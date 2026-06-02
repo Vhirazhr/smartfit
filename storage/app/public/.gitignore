@@ -1,2 +1,4 @@
 *
 !.gitignore
+!fashion-items/
+!fashion-items/**
