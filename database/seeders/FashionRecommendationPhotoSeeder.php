@@ -151,8 +151,11 @@ class FashionRecommendationPhotoSeeder extends Seeder
     private function ensureCategories(): void
     {
         $categories = [
-            ['name' => 'Bohemian', 'slug' => 'bohemian', 'description' => 'Bohemian-style fashion with flowy and textured pieces.', 'sort_order' => 6],
-            ['name' => 'Classic', 'slug' => 'classic', 'description' => 'Timeless classic outfits with clean cuts.', 'sort_order' => 7],
+            ['name' => 'Bohemian', 'slug' => 'bohemian', 'description' => 'Bohemian-style fashion with flowy and textured pieces.', 'sort_order' => 1],
+            ['name' => 'Casual', 'slug' => 'casual', 'description' => 'Everyday outfits with comfort-first proportions.', 'sort_order' => 2],
+            ['name' => 'Classic', 'slug' => 'classic', 'description' => 'Timeless classic outfits with clean cuts.', 'sort_order' => 3],
+            ['name' => 'Formal', 'slug' => 'formal', 'description' => 'Structured outfits for meetings, events, and polished occasions.', 'sort_order' => 4],
+            ['name' => 'Sporty', 'slug' => 'sporty', 'description' => 'Activewear-inspired looks with practical movement.', 'sort_order' => 5],
         ];
 
         foreach ($categories as $cat) {
@@ -165,18 +168,6 @@ class FashionRecommendationPhotoSeeder extends Seeder
                     'sort_order' => $cat['sort_order'],
                 ]
             );
-        }
-
-        $existingSortOrders = [
-            'bohemian' => 1,
-            'casual' => 2,
-            'classic' => 3,
-            'formal' => 4,
-            'sporty' => 5,
-        ];
-
-        foreach ($existingSortOrders as $slug => $order) {
-            FashionCategory::where('slug', $slug)->update(['sort_order' => $order, 'is_active' => true]);
         }
     }
 
